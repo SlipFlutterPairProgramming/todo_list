@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_bentley/pages/home_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,16 +16,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: ToDoPage(),
+      home: const ToDoPage(),
     );
-  }
-}
-
-class ToDoPage extends StatelessWidget {
-  const ToDoPage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
   }
 }
