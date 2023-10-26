@@ -11,6 +11,7 @@ class Todo {
 
 class TodoList extends GetxController {
   List<Todo> todoList = [];
+  // RxList<Todo> todoList2 = List<Todo>.empty().obs;
 
   addList(Todo item) {
     todoList.add(item);
@@ -26,7 +27,7 @@ class TodoList extends GetxController {
     item.isDone = !item.isDone;
     update();
   }
-  
+
   isLike(Todo item) {
     item.isLike = !item.isLike;
     if(item.isLike) {

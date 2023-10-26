@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:todo_bentley/ui/body.dart';
 import 'package:todo_bentley/ui/todo.dart';
 
 class HomePage extends StatelessWidget {
@@ -53,6 +54,8 @@ class HomePage extends StatelessWidget {
                     child: TextButton(
                       onPressed: () {
                         controller.addList(Todo(title, content));
+
+                        Navigator.pop(context);
                       },
                       child: Text("add"),
                     ),
@@ -68,6 +71,8 @@ class HomePage extends StatelessWidget {
           color: Colors.white,
         ),
       ),
-    ),);
+        body: TodoBody(todoList: controller.todoList),
+    ),
+    );
   }
 }
