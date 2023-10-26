@@ -11,18 +11,23 @@ class ToDoPage extends StatelessWidget {
         SizedBox(
           height: 56,
         ),
-        TodoCard(),
-        TodoCard(),
-        TodoCard(),
-        TodoCard(),
+        TodoCard(title: 'TODO', description: 'Urgent, Important Thins', Colors.red, Colors.lightGreenAccent),
+        TodoCard(title: 'To Schedule', description: 'Urgent, Important Thins',),
+        TodoCard(title: 'To Delegate', description: 'Urgent, Important Thins',),
+        TodoCard(title: 'To Delelte', description: 'Urgent, Important Thins',),
       ],
     ));
   }
 }
 
 class TodoCard extends StatelessWidget {
+  final String title;
+  final String description;
+  final MaterialColor backgroundColor;
+  final MaterialColor textColor;
   const TodoCard({
     super.key,
+    required this.title, required this.description, required this.backgroundColor, required this.textColor
   });
 
   @override
@@ -30,22 +35,20 @@ class TodoCard extends StatelessWidget {
     return Flexible(
       flex: 1,
       child: Container(
-        decoration: const BoxDecoration(color: Colors.amber),
-        child: const Row(
+        decoration: BoxDecoration(color: backgroundColor),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Column(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Text('Title'),
-                    Icon(
-                      Icons.add_outlined,
-                    )
-                  ],
-                ),
-                Text('Descrition'),
+                Text(title, style: TextStyle(fontSize: 24, color:  textColor,),),
+                Icon(
+                  title == "TODO" ? Icons.add_outlined : null,
+                )
               ],
             ),
+            Text(description, style: TextStyle(fontSize: 24, color:  textColor,),),
           ],
         ),
       ),
