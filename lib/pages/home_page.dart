@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_state_manager/src/rx_flutter/rx_getx_widget.dart';
+import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
+import 'package:todo_bentley/main.dart';
 import 'package:todo_bentley/pages/add_page.dart';
 
 class ToDoPage extends StatelessWidget {
@@ -58,7 +62,7 @@ class TodoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Flexible(
-      flex: 1,
+      // flex: 1,
       child: Container(
         decoration: BoxDecoration(color: backgroundColor),
         child: Padding(
@@ -106,6 +110,25 @@ class TodoCard extends StatelessWidget {
                   fontWeight: FontWeight.w500,
                 ),
               ),
+              Expanded(
+                child: Obx(() => ListView(
+                  children: [
+                    for (var tile in Get.find<MyController>().todoList)
+                      Text(tile.title)
+                  ],
+                )),
+              ),
+              // Expanded(
+              //   child: GetX<MyController>(
+              //     builder: (controller){
+              //       return ListView.builder(
+              //         itemCount: controller.todoList.length,
+              //         itemBuilder: (context, index) {
+              //           return Text('${controller.todoList[index].title}');
+              //       },);
+              //     },
+              //   ),
+              // )
             ],
           ),
         ),

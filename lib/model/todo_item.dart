@@ -1,1 +1,5 @@
-class TodoItem {}
+class TodoItem {
+  final String title;
+
+  TodoItem(this.title);
+}

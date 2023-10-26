@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:get/state_manager.dart';
+import 'package:todo_bentley/model/todo_item.dart';
 import 'package:todo_bentley/pages/home_page.dart';
 
 void main() {
+  Get.put(MyController());
   runApp(const MyApp());
 }
 
 class MyController extends GetxController {
-  final todoList = [].obs;
+  var todoList = <TodoItem>[].obs;
+
+  void addItem(TodoItem todoItem){
+    todoList.add(todoItem);
+  }
 }
 
 class MyApp extends StatelessWidget {

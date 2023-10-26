@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:todo_bentley/main.dart';
+import 'package:todo_bentley/model/todo_item.dart';
 
 class AddPage extends StatefulWidget {
   const AddPage({super.key});
@@ -9,6 +12,7 @@ class AddPage extends StatefulWidget {
 
 class _AddPageState extends State<AddPage> {
   String category = "category";
+  final todoController = Get.put(MyController());
 
   @override
   Widget build(BuildContext context) {
@@ -33,12 +37,14 @@ class _AddPageState extends State<AddPage> {
           radioWidget(
               title: "To Delete",
               subTitle: "Not Urgent, Not Important Things."),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text('Create'),
-          ),
+      TextButton(
+        onPressed: () {
+          todoController.addItem(TodoItem('test'));
+          // Navigator.pop(context);
+          Get.back();
+        },
+        child: const Text('Create'),
+      )
         ],
       ),
     );
