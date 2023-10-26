@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:todo_bentley/pages/add_page.dart';
+import 'package:get/state_manager.dart';
 import 'package:todo_bentley/pages/home_page.dart';
 
 void main() {
   runApp(const MyApp());
+}
+
+class MyController extends GetxController {
+  final todoList = [].obs;
 }
 
 class MyApp extends StatelessWidget {
@@ -17,7 +21,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: AddPage(),
+      home: const ToDoPage(),
     );
   }
 }
