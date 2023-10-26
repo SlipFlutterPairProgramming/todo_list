@@ -72,50 +72,82 @@ class TodoGroupWidget extends StatefulWidget {
   State<TodoGroupWidget> createState() => _TodoGroupWidgetState();
 }
 
-class _TodoGroupWidgetState extends State<TodoGroupWidget> {
+class _TodoGroupWidgetState extends State<TodoGroupWidget>
+    with TickerProviderStateMixin {
+  late AnimationController anmCtrl;
+  late Animation flex;
+
+  @override
+  void initState() {
+    super.initState();
+    anmCtrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 300));
+    flex = IntTween(
+      begin: 100,
+      end: 300,
+    ).animate(anmCtrl);
+  }
+
+  void checkStateAndAction() {
+    final ctrl = Get.find<TodoController>();
+    if (ctrl.selectedGroup.value == widget.group) {
+      anmCtrl.forward();
+    } else {
+      anmCtrl.reverse();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final ctrl = Get.find<TodoController>();
     final (bg, fg) = getGroupColors(widget.group);
-    return Obx(
-      () => Expanded(
-        //추후 animation을 위해 flex를 크게 잡음
-        flex: ctrl.selectedGroup.value == widget.group ? 300 : 100,
-        child: GestureDetector(
-          onTap: () {
-            if (ctrl.selectedGroup.value == widget.group) {
-              ctrl.selectedGroup.value = Group.all;
-            } else {
-              ctrl.selectedGroup.value = widget.group;
-            }
-          },
-          child: Container(
-            color: bg,
-            child: Column(
-              children: [
-                Row(
+    return AnimatedBuilder(
+      animation: anmCtrl,
+      builder: (_, __) => Obx(
+        () {
+          checkStateAndAction();
+          return Expanded(
+            //추후 animation을 위해 flex를 크게 잡음
+            flex:
+                ctrl.selectedGroup.value == Group.all ? flex.value : flex.value,
+            child: GestureDetector(
+              onTap: () {
+                if (ctrl.selectedGroup.value == widget.group) {
+                  ctrl.selectedGroup.value = Group.all;
+                } else {
+                  ctrl.selectedGroup.value = widget.group;
+                }
+                checkStateAndAction();
+              },
+              child: Container(
+                color: bg,
+                child: Column(
                   children: [
-                    Text(
-                      widget.group.name,
-                      style: TextStyle(
-                        color: fg,
-                        fontSize: 20,
-                      ),
+                    Row(
+                      children: [
+                        Text(
+                          widget.group.name + flex.value.toString(),
+                          style: TextStyle(
+                            color: fg,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Expanded(
+                      child: Obx(() => ListView(
+                            children: [
+                              for (var tile in ctrl.list)
+                                if (tile.group == widget.group) tile,
+                            ],
+                          )),
                     ),
                   ],
                 ),
-                Expanded(
-                  child: Obx(() => ListView(
-                        children: [
-                          for (var tile in ctrl.list)
-                            if (tile.group == widget.group) tile,
-                        ],
-                      )),
-                ),
-              ],
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

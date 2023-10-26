@@ -19,6 +19,7 @@ class _InputingDialogState extends State<InputingDialog> {
 
   @override
   Widget build(BuildContext context) {
+    print('hello');
     return Container(
       color: Colors.white,
       child: Column(
