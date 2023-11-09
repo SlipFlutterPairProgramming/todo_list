@@ -45,7 +45,12 @@ class TodoAppWidget extends StatelessWidget {
 }
 
 class TodoController extends GetxController {
-  final list = [].obs;
+  final list = <TodoCard>[].obs;
+
+  void addItem(TodoCard todoCard) {
+    list.add(todoCard);
+  }
+
 }
 
 enum Group { toDo, toSchedule, toDelegate, toDelete }
@@ -97,6 +102,7 @@ class _TodoCardState extends State<TodoCard> {
         Flexible(
           flex: 1,
           child: Container(
+            height: 100,
             color: bg,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -110,15 +116,54 @@ class _TodoCardState extends State<TodoCard> {
                 ),
                 Visibility(
                     visible: true,
-                    child: Icon(
-                      Icons.add,
-                      color: Colors.white,
-                    ))
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => AddPage(),));
+                      },
+                      child: Icon(
+                        Icons.add,
+                        color: Colors.white,
+                      ),
+                    ),),
               ],
             ),
           ),
         ),
       ],
+    );
+  }
+}
+
+
+class AddPage extends StatefulWidget {
+  AddPage({super.key});
+  final textController = TextEditingController();
+  String content = "";
+
+  @override
+  State<AddPage> createState() => _AddPageState();
+}
+
+class _AddPageState extends State<AddPage> {
+  final todoController = Get.put(TodoController());
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Column(
+        children: [
+          Text("What To Do ?"),
+          TextField(
+            controller: widget.textController,
+            onChanged: (value) {
+              widget.content = value;
+            },
+          ),
+
+          TextButton(onPressed: () {
+            todoController.addItem(TodoCard(group: Group.toDo, content: widget.content),),
+          }, child: Text("Create"),),
+        ],
+      ),
     );
   }
 }
