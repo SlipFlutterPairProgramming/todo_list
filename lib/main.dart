@@ -130,7 +130,21 @@ class AddPage extends GetView<TodobContorller> {
         child: Column(
           children: [
             TextField(
-                onSubmitted: (text) => controller.addTile(text, Group.Todo)),
+              onSubmitted: (text) => controller.addTile(text, Group.Todo),
+            ),
+            DropdownMenu<Group>(
+              initialSelection: Group.Todo,
+              onSelected: (Group? value) {
+                controller.addSelected.value = value!;
+              },
+              dropdownMenuEntries: [
+                for (var group in Group.values)
+                  if (group != Group.all) group
+              ].map<DropdownMenuEntry<Group>>((Group value) {
+                return DropdownMenuEntry<Group>(
+                    value: value, label: value.name);
+              }).toList(),
+            )
           ],
         ),
       ),
