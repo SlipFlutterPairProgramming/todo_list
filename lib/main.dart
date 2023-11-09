@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 void main() {
+  Get.put(TodoController());
   runApp(const MyApp());
 }
 
@@ -50,7 +51,6 @@ class TodoController extends GetxController {
   void addItem(TodoCard todoCard) {
     list.add(todoCard);
   }
-
 }
 
 enum Group { toDo, toSchedule, toDelegate, toDelete }
@@ -94,6 +94,8 @@ class TodoCard extends StatefulWidget {
 }
 
 class _TodoCardState extends State<TodoCard> {
+  final todoController = Get.put(TodoController());
+
   @override
   Widget build(BuildContext context) {
     final (bg, fg) = getGroupColors(widget.group);
@@ -104,27 +106,48 @@ class _TodoCardState extends State<TodoCard> {
           child: Container(
             height: 100,
             color: bg,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Column(
               children: [
-                Text(
-                  '${widget.content}',
-                  style: TextStyle(
-                    color: fg,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                Visibility(
-                    visible: true,
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => AddPage(),));
-                      },
-                      child: Icon(
-                        Icons.add,
-                        color: Colors.white,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '${widget.content}',
+                      style: TextStyle(
+                        color: fg,
+                        fontWeight: FontWeight.w700,
                       ),
-                    ),),
+                    ),
+                    Visibility(
+                      visible: true,
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AddPage(),
+                              ));
+                        },
+                        child: Icon(
+                          Icons.add,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Expanded(
+                  child: Obx(
+                    () => ListView(
+                      children: [
+                        for (var todo in todoController.list)
+                          widget.group == Group.toDo
+                              ? Text('${todo.content}')
+                              : Text('')
+                      ],
+                    ),
+                  ),
+                )
               ],
             ),
           ),
@@ -133,7 +156,6 @@ class _TodoCardState extends State<TodoCard> {
     );
   }
 }
-
 
 class AddPage extends StatefulWidget {
   AddPage({super.key});
@@ -158,10 +180,16 @@ class _AddPageState extends State<AddPage> {
               widget.content = value;
             },
           ),
-
-          TextButton(onPressed: () {
-            todoController.addItem(TodoCard(group: Group.toDo, content: widget.content),),
-          }, child: Text("Create"),),
+          TextButton(
+            onPressed: () {
+              print(widget.content);
+              todoController.addItem(
+                TodoCard(group: Group.toDo, content: widget.content),
+              );
+              Navigator.pop(context);
+            },
+            child: Text("Create"),
+          ),
         ],
       ),
     );
