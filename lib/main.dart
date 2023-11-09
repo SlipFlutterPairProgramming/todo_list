@@ -48,7 +48,9 @@ class TodobContorller extends GetxController {
     list.insert(0, TodobTile(content: content, group: group));
   }
 
-  void deleteTile() {}
+  void deleteTile(String uuid) {
+    list.removeWhere((element) => element.uuid == uuid);
+  }
 
   void selectGroup() {}
 }
@@ -115,6 +117,9 @@ class _TodobTileState extends State<TodobTile> {
       onDoubleTap: () => setState(() {
         print('double tap');
         widget.favorite = !widget.favorite;
+      }),
+      onLongPress: () => setState(() {
+        Get.find<TodobContorller>().deleteTile(widget.uuid);
       }),
       child: Row(
         children: [
