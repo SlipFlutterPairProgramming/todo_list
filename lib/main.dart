@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:uuid/uuid.dart';
@@ -14,6 +16,7 @@ import 'package:uuid/uuid.dart';
 */
 
 void main() {
+  Get.put(TodobContorller());
   runApp(const GetMaterialApp(
       title: 'third JG KH', home: Scaffold(body: Todob())));
 }
@@ -39,26 +42,48 @@ class TodobContorller extends GetxController {
     TodobTile(content: 'hello', group: Group.Todo),
   ].obs;
   final selected = Group.all.obs;
-  void addTile() {}
+  final addSelected = Group.all.obs;
+
+  void addTile(String content, Group group) {
+    list.insert(0, TodobTile(content: content, group: group));
+  }
+
   void deleteTile() {}
+
   void selectGroup() {}
 }
 
-class TodobGroup extends StatelessWidget {
+class TodobGroup extends GetView<TodobContorller> {
   const TodobGroup({super.key, required this.group});
+
   final Group group;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(group.name),
-        // Expanded(
-        //   child: ListView(
-        //     children: const [],
-        //   ),
-        // ),
-      ],
+    return Expanded(
+      flex: 100,
+      child: GestureDetector(
+          onTap: () => Get.bottomSheet(Text('dd')
+              //     SingleChildScrollView(
+              //   child: Column(
+              //     children: [
+              //       TextField(
+              //           onSubmitted: (text) => controller.addTile(text, Group.Todo)),
+              //     ],
+              //   ),
+              // )
+              ),
+          child: Column(
+            children: [
+              Text(group.name),
+              // Expanded(
+              //   child:
+              //   ListView(
+              //     children: const [],
+              //   ),
+              // ),
+            ],
+          )),
     );
   }
 }
@@ -69,6 +94,7 @@ class TodobTile extends StatefulWidget {
     required this.content,
     required this.group,
   });
+
   final content;
   final group;
   final uuid = uuidGen.v4();
@@ -82,5 +108,21 @@ class _TodobTileState extends State<TodobTile> {
   @override
   Widget build(BuildContext context) {
     return const Placeholder();
+  }
+}
+
+class AddPage extends GetView<TodobContorller> {
+  const AddPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          TextField(
+              onSubmitted: (text) => controller.addTile(text, Group.Todo)),
+        ],
+      ),
+    );
   }
 }
