@@ -18,16 +18,24 @@ import 'package:uuid/uuid.dart';
 void main() {
   Get.put(TodobContorller());
   runApp(const GetMaterialApp(
-      title: 'third JG KH', home: Scaffold(body: Todob())));
+    title: 'third JG KH',
+    home: Scaffold(body: Todob()),
+    debugShowCheckedModeBanner: false,
+  ));
 }
 
-class Todob extends StatelessWidget {
+class Todob extends GetView<TodobContorller> {
   const Todob({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
+        Align(
+            alignment: Alignment.topRight,
+            child: IconButton(
+                onPressed: () => Get.bottomSheet(const AddPage()),
+                icon: Icon(Icons.add))),
         for (var group in Group.values)
           if (group != Group.all) TodobGroup(group: group)
       ],
@@ -64,31 +72,21 @@ class TodobGroup extends GetView<TodobContorller> {
   Widget build(BuildContext context) {
     return Expanded(
       flex: 100,
-      child: GestureDetector(
-          onLongPress: () => Get.bottomSheet(const AddPage()),
-          //     SingleChildScrollView(
-          //   child: Column(
-          //     children: [
-          //       TextField(
-          //           onSubmitted: (text) => controller.addTile(text, Group.Todo)),
-          //     ],
-          //   ),
-          // )
-          child: Column(
-            children: [
-              Text(group.name),
-              Expanded(
-                child: Obx(
-                  () => ListView(
-                    children: [
-                      for (var tile in controller.list)
-                        if (tile.group == group) tile
-                    ],
-                  ),
-                ),
+      child: Column(
+        children: [
+          Text(group.name),
+          Expanded(
+            child: Obx(
+              () => ListView(
+                children: [
+                  for (var tile in controller.list)
+                    if (tile.group == group) tile
+                ],
               ),
-            ],
-          )),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -103,6 +101,7 @@ class TodobTile extends StatefulWidget {
   final content;
   final group;
   bool favorite = false;
+  bool done = false;
   final uuid = uuidGen.v4();
   static const uuidGen = Uuid();
 
@@ -114,17 +113,26 @@ class _TodobTileState extends State<TodobTile> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onDoubleTap: () => setState(() {
+      onTap: () => setState(() {
         print('double tap');
         widget.favorite = !widget.favorite;
       }),
       onLongPress: () => setState(() {
         Get.find<TodobContorller>().deleteTile(widget.uuid);
       }),
+      onDoubleTap: () => setState(() {
+        widget.done = !widget.done;
+      }),
       child: Row(
         children: [
-          widget.favorite ? const Icon(Icons.star) : const Text(''),
-          Text(widget.content),
+          widget.favorite
+              ? const Icon(Icons.star, color: Colors.yellow)
+              : const Text(''),
+          Text(widget.content,
+              style: TextStyle(
+                  decoration: widget.done
+                      ? TextDecoration.lineThrough
+                      : TextDecoration.none)),
         ],
       ),
     );
