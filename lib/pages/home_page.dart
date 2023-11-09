@@ -129,59 +129,49 @@ class TodoCategory extends StatelessWidget {
                                       itemCount: todoItems.length,
                                       itemBuilder: (context, index) {
                                         return Dismissible(
-                                          key: Key(index.toString()),
-                                          //우측 드래그 배경
-                                          background:
-                                              Container(color: Colors.red),
-                                          //좌측 드래그 배경
-                                          secondaryBackground:
-                                              Container(color: Colors.green),
+                                          key: Key(
+                                            todoItems[index].title +
+                                                index.toString(),
+                                          ),
+                                          // 삭제
                                           onDismissed: (direction) {
-                                            if (direction ==
-                                                DismissDirection.startToEnd) {
-                                              // 우측으로 드래그 시 수행할 액션
-                                              controller.setTodoStar(
-                                                  category,
-                                                  index,
-                                                  !todoItems[index].star);
-                                            } else if (direction ==
-                                                DismissDirection.endToStart) {
-                                              // 좌측으로 드래그 시 수행할 액션
-                                              controller.deleteTodo(
-                                                category,
-                                                index,
-                                              );
-                                            }
+                                            controller.deleteTodo(
+                                              category,
+                                              index,
+                                            );
                                           },
-                                          child: InkWell(
-                                            onTap: () {
-                                              // ListTile 클릭 시 수행할 액션
-                                              controller.setTodoDone(
-                                                  category,
-                                                  index,
-                                                  !todoItems[index].done);
-                                            },
-                                            child: Card(
-                                              color: bgColor.withOpacity(0.7),
-                                              child: ListTile(
-                                                title: Text(
-                                                  todoItems[index].star
-                                                      ? '★ ${todoItems[index].title}'
-                                                      : todoItems[index].title,
-                                                  style: TextStyle(
-                                                    decoration: todoItems[index]
-                                                            .done
-                                                        ? TextDecoration
-                                                            .lineThrough
-                                                        : TextDecoration.none,
-                                                    fontWeight:
-                                                        todoItems[index].star
-                                                            ? FontWeight.w700
-                                                            : FontWeight.w400,
-                                                  ),
+                                          child: Card(
+                                            color: bgColor.withOpacity(0.7),
+                                            child: ListTile(
+                                              onTap: () {
+                                                controller.setTodoDone(
+                                                    category,
+                                                    index,
+                                                    !todoItems[index].done);
+                                              },
+                                              onLongPress: () {
+                                                controller.setTodoStar(
+                                                    category,
+                                                    index,
+                                                    !todoItems[index].star);
+                                              },
+                                              title: Text(
+                                                todoItems[index].star
+                                                    ? '★ ${todoItems[index].title}'
+                                                    : todoItems[index].title,
+                                                style: TextStyle(
+                                                  decoration:
+                                                      todoItems[index].done
+                                                          ? TextDecoration
+                                                              .lineThrough
+                                                          : TextDecoration.none,
+                                                  fontWeight:
+                                                      todoItems[index].star
+                                                          ? FontWeight.w700
+                                                          : FontWeight.w400,
                                                 ),
-                                                // 여기에 ListTile 구성요소들을 추가
                                               ),
+                                              // 여기에 ListTile 구성요소들을 추가
                                             ),
                                           ),
                                         );
