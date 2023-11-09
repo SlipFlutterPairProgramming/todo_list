@@ -36,10 +36,10 @@ class TodoAppWidget extends StatelessWidget {
         SizedBox(
           height: 56,
         ),
-        TodoCard(group: Group.toDo, content: "To Do"),
-        TodoCard(group: Group.toSchedule, content: "To Scedule"),
-        TodoCard(group: Group.toDelete, content: "To Delegate"),
-        TodoCard(group: Group.toDelegate, content: "To Delete"),
+        TodoCard(group: Group.toDo, content: "To Do", isSelected: true),
+        TodoCard(group: Group.toSchedule, content: "To Scedule", isSelected: false),
+        TodoCard(group: Group.toDelete, content: "To Delegate", isSelected: false),
+        TodoCard(group: Group.toDelegate, content: "To Delete", isSelected: false),
       ],
     );
   }
@@ -50,6 +50,16 @@ class TodoController extends GetxController {
 
   void addItem(TodoCard todoCard) {
     list.add(todoCard);
+  }
+
+  void isSelected(TodoCard todoCard) {
+    for(var i = 0; i < list.length; i++) {
+      if(list[i].group == todoCard.group) {
+        list[i].isSelected = true;
+      } else {
+        list[i].isSelected = false;
+      }
+    }
   }
 }
 
@@ -81,13 +91,18 @@ enum Group { toDo, toSchedule, toDelegate, toDelete }
 }
 
 class TodoCard extends StatefulWidget {
-  const TodoCard({
+  TodoCard({
     super.key,
     required this.group,
     required this.content,
+    required this.isSelected,
   });
+
   final Group group;
   final String content;
+  bool isSelected;
+
+
 
   @override
   State<TodoCard> createState() => _TodoCardState();
@@ -99,60 +114,67 @@ class _TodoCardState extends State<TodoCard> {
   @override
   Widget build(BuildContext context) {
     final (bg, fg) = getGroupColors(widget.group);
-    return Row(
-      children: [
-        Flexible(
-          flex: 1,
-          child: Container(
-            height: 100,
-            color: bg,
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      '${widget.content}',
-                      style: TextStyle(
-                        color: fg,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    Visibility(
-                      visible: true,
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => AddPage(),
-                              ));
-                        },
-                        child: Icon(
-                          Icons.add,
-                          color: Colors.white,
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          widget.isSelected = !widget.isSelected;
+        });
+      },
+      child: Row(
+        children: [
+          Flexible(
+            flex: 1,
+            child: Container(
+              height: widget.isSelected ? 300 : 100,
+              color: bg,
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '${widget.content}',
+                        style: TextStyle(
+                          color: fg,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                Expanded(
-                  child: Obx(
-                    () => ListView(
-                      children: [
-                        for (var todo in todoController.list)
-                          widget.group == Group.toDo
-                              ? Text('${todo.content}')
-                              : Text('')
-                      ],
-                    ),
+                      Visibility(
+                        visible: true,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AddPage(),
+                                ));
+                          },
+                          child: Icon(
+                            widget.isSelected ? Icons.add : null,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                )
-              ],
+                  Expanded(
+                    child: Obx(
+                      () => ListView(
+                        children: [
+                          for (var todo in todoController.list)
+                            widget.group == Group.toDo
+                                ? Text('${todo.content}')
+                                : Text('')
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -184,7 +206,7 @@ class _AddPageState extends State<AddPage> {
             onPressed: () {
               print(widget.content);
               todoController.addItem(
-                TodoCard(group: Group.toDo, content: widget.content),
+                TodoCard(group: Group.toDo, content: widget.content, isSelected: false,),
               );
               Navigator.pop(context);
             },
