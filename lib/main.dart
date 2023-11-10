@@ -33,7 +33,7 @@ class TodoController extends GetxController {
       TodoItem(title: 'Update website'),
     ].obs,
     'To Delete': <TodoItem>[].obs,
-  }.obs; // 각 카테고리의 할 일 목록도 관찰 가능한 리스트로 정의합니다.
+  }; // 각 카테고리의 할 일 목록도 관찰 가능한 리스트로 정의합니다.
 
   void changeCategory(String category) {
     selectedCategory.value = category; // 상태를 업데이트하는 메서드입니다.
@@ -50,19 +50,19 @@ class TodoController extends GetxController {
     }
   }
 
-  void setTodoDone(String category, int index, bool isDone) {
+  void setTodoDone(String category, int index) {
     var todoItem = todoList[category]?[index];
     if (todoItem != null) {
-      todoItem.done = isDone;
+      todoItem.done = !todoItem.done;
       todoList[category]?.refresh(); // UI 업데이트를 위해 상태를 갱신합니다.
     }
   }
 
   // 할 일 항목의 별표 상태를 토글합니다.
-  void setTodoStar(String category, int index, bool isStar) {
+  void setTodoStar(String category, int index) {
     var todoItem = todoList[category]?[index];
     if (todoItem != null) {
-      todoItem.star = isStar;
+      todoItem.star = !todoItem.star;
       todoList[category]?.refresh(); // UI 업데이트를 위해 상태를 갱신합니다.
     }
   }

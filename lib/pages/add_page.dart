@@ -14,8 +14,7 @@ class _AddScreenState extends State<AddScreen> {
   Color _selectedBgColor = const Color(0xffC8C8C8);
   Color _selectedFontColor = const Color(0xff000000);
 
-  final TodoController controller =
-      Get.put(TodoController()); // 컨트롤러 인스턴스를 생성하고 GetX에 등록합니다.
+  final TodoController controller = Get.find();
 
   // TextEditingController 인스턴스를 생성합니다.
   final textController = TextEditingController();
