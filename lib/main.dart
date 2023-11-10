@@ -17,7 +17,7 @@ extension CategoryExtension on Category {
             title: "To Do",
             description: "Urgent, Important Things.",
             bgColor: const Color(0xffFF8181),
-            fontColor: const Color(0xffD0F4A4));
+            fontColor: const Color(0xff077522));
       case Category.toSchedule:
         return TodoCategoryData(
             title: 'To Schedule',
@@ -29,13 +29,13 @@ extension CategoryExtension on Category {
             title: 'To Delegate',
             description: "Urgent, Not Important Things.",
             bgColor: const Color(0xffEAFFD0),
-            fontColor: const Color(0xffD297F3));
+            fontColor: const Color(0xffBA55D3));
       case Category.toDelete:
         return TodoCategoryData(
             title: 'To Delete',
             description: "Not Urgent, Not Important Things.",
             bgColor: const Color(0xff95E1D3),
-            fontColor: const Color(0xffE27C7F));
+            fontColor: const Color(0xff569889));
       default:
         return TodoCategoryData(
           title: "Unknown",

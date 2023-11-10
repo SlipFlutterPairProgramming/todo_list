@@ -121,6 +121,7 @@ class _AddScreenState extends State<AddScreen> {
                       child: Text(
                         'Create',
                         style: TextStyle(
+                          fontSize: 24,
                           color: _selectedFontColor,
                           fontFamily: "Jalnan",
                         ),

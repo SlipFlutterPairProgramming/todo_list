@@ -133,8 +133,10 @@ class TodoCategory extends StatelessWidget {
                                             );
                                           },
                                           child: Card(
-                                            elevation: 2,
-                                            color: Colors.white,
+                                            elevation: 1.2,
+                                            color: todoItems[index].done
+                                                ? Colors.white.withOpacity(0.4)
+                                                : Colors.white,
                                             child: ListTile(
                                               onTap: () {
                                                 controller.setTodoDone(
@@ -155,8 +157,9 @@ class TodoCategory extends StatelessWidget {
                                                 style: TextStyle(
                                                   color: todoItems[index].done
                                                       ? category.value.fontColor
-                                                      : category.value.fontColor
-                                                          .withOpacity(0.6),
+                                                          .withOpacity(0.6)
+                                                      : category
+                                                          .value.fontColor,
                                                   decoration:
                                                       todoItems[index].done
                                                           ? TextDecoration
