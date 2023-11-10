@@ -6,6 +6,46 @@ void main() {
   runApp(const MyApp());
 }
 
+enum Category { toDo, toSchedule, toDelegate, toDelete, unknown }
+
+extension CategoryExtension on Category {
+  TodoCategoryData get value {
+    switch (this) {
+      case Category.toDo:
+        return TodoCategoryData(
+            title: "To Do",
+            description: "Urgent, Important Things.",
+            bgColor: const Color(0xffFF8181),
+            fontColor: const Color(0xffD0F4A4));
+      case Category.toSchedule:
+        return TodoCategoryData(
+            title: 'To Schedule',
+            description: "Not Urgent, Important Things.",
+            bgColor: const Color(0xffFCE38A),
+            fontColor: const Color(0xff6677bb));
+      case Category.toDelegate:
+        return TodoCategoryData(
+            title: 'To Delegate',
+            description: "Urgent, Not Important Things.",
+            bgColor: const Color(0xffEAFFD0),
+            fontColor: const Color(0xffD297F3));
+      case Category.toDelete:
+        return TodoCategoryData(
+            title: 'To Delete',
+            description: "Not Urgent, Not Important Things.",
+            bgColor: const Color(0xff95E1D3),
+            fontColor: const Color(0xffE27C7F));
+      default:
+        return TodoCategoryData(
+          title: "Unknown",
+          description: "Unknown",
+          bgColor: Colors.white,
+          fontColor: Colors.black,
+        );
+    }
+  }
+}
+
 class TodoItem {
   String title;
   bool star;
@@ -18,59 +58,54 @@ class TodoController extends GetxController {
   var selectedCategory = ''.obs;
 
   var todoList = {
-    'To Do': <TodoItem>[
+    Category.toDo: <TodoItem>[
       TodoItem(title: 'Buy groceries', done: true),
       TodoItem(title: 'Walk the dog', star: true),
       TodoItem(title: 'Old newsletters'),
       TodoItem(title: 'Unused files'),
     ].obs,
-    'To Schedule': <TodoItem>[
+    Category.toSchedule: <TodoItem>[
       TodoItem(title: 'Doctor appointment'),
       TodoItem(title: 'Team meeting'),
       TodoItem(title: 'Write monthly report'),
     ].obs,
-    'To Delegate': <TodoItem>[
+    Category.toDelegate: <TodoItem>[
       TodoItem(title: 'Update website'),
     ].obs,
-    'To Delete': <TodoItem>[].obs,
+    Category.toDelete: <TodoItem>[].obs,
   }; // 각 카테고리의 할 일 목록도 관찰 가능한 리스트로 정의합니다.
 
   void changeCategory(String category) {
-    selectedCategory.value = category; // 상태를 업데이트하는 메서드입니다.
+    selectedCategory.value = category;
   }
 
   // 새로운 할 일 항목을 특정 카테고리에 추가합니다.
-  void addTodoItem(String category, String todoItem) {
-    // 카테고리의 존재 여부를 체크하고 항목을 추가합니다.
-    if (todoList.containsKey(category)) {
-      todoList[category]?.add(TodoItem(title: todoItem));
-    } else {
-      // 주어진 카테고리가 존재하지 않을 경우 경고 메시지를 표시하거나 예외를 처리합니다.
-      print('Category does not exist');
-    }
+  void addTodoItem(Category category, String todoItem) {
+    todoList[category]?.add(TodoItem(title: todoItem));
   }
 
-  void setTodoDone(String category, int index) {
+  // 할 일 항목의 완료 상태를 토글합니다.
+  void setTodoDone(Category category, int index) {
     var todoItem = todoList[category]?[index];
     if (todoItem != null) {
       todoItem.done = !todoItem.done;
-      todoList[category]?.refresh(); // UI 업데이트를 위해 상태를 갱신합니다.
+      todoList[category]?.refresh();
     }
   }
 
   // 할 일 항목의 별표 상태를 토글합니다.
-  void setTodoStar(String category, int index) {
+  void setTodoStar(Category category, int index) {
     var todoItem = todoList[category]?[index];
     if (todoItem != null) {
       todoItem.star = !todoItem.star;
-      todoList[category]?.refresh(); // UI 업데이트를 위해 상태를 갱신합니다.
+      todoList[category]?.refresh();
     }
   }
 
   // 할 일 항목을 삭제합니다.
   void deleteTodo(String category, int index) {
     todoList[category]?.removeAt(index);
-    todoList[category]?.refresh(); // UI 업데이트를 위해 상태를 갱신합니다.
+    todoList[category]?.refresh();
   }
 }
 

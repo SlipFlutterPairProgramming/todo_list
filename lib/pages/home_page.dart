@@ -48,46 +48,6 @@ class TodoCategoryData {
   });
 }
 
-enum Category { toDo, toSchedule, toDelegate, toDelete }
-
-extension CategoryExtension on Category {
-  TodoCategoryData get value {
-    switch (this) {
-      case Category.toDo:
-        return TodoCategoryData(
-            title: "To Do",
-            description: "Urgent, Important Things.",
-            bgColor: const Color(0xffFF8181),
-            fontColor: const Color(0xffD0F4A4));
-      case Category.toSchedule:
-        return TodoCategoryData(
-            title: 'To Schedule',
-            description: "Not Urgent, Important Things.",
-            bgColor: const Color(0xffFCE38A),
-            fontColor: const Color(0xff6677bb));
-      case Category.toDelegate:
-        return TodoCategoryData(
-            title: 'To Delegate',
-            description: "Urgent, Not Important Things.",
-            bgColor: const Color(0xffEAFFD0),
-            fontColor: const Color(0xffD297F3));
-      case Category.toDelete:
-        return TodoCategoryData(
-            title: 'To Delete',
-            description: "Not Urgent, Not Important Things.",
-            bgColor: const Color(0xff95E1D3),
-            fontColor: const Color(0xffE27C7F));
-      default:
-        return TodoCategoryData(
-          title: "Unknown",
-          description: "Unknown",
-          bgColor: Colors.white,
-          fontColor: Colors.black,
-        );
-    }
-  }
-}
-
 class TodoCategory extends StatelessWidget {
   final Category category;
 
@@ -108,7 +68,7 @@ class TodoCategory extends StatelessWidget {
 
       var todoItems = controller.todoList[category.value.title];
       return Flexible(
-        flex: isSelected ? 2 : 1,
+        flex: isSelected ? 3 : 1,
         child: GestureDetector(
           onTap: () => controller.changeCategory(category.value.title),
           child: Container(
@@ -147,14 +107,19 @@ class TodoCategory extends StatelessWidget {
                       )
                     ],
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
                   isClicked
                       ? isSelected
                           ? Expanded(
                               child: todoItems == null || todoItems.isEmpty
-                                  ? const Text("Todo를 생성해주세요.")
+                                  ? Center(
+                                      child: Text(
+                                        "Please create a Todo item.",
+                                        style: TextStyle(
+                                          color: category.value.fontColor,
+                                          fontSize: 24,
+                                        ),
+                                      ),
+                                    )
                                   : ListView.builder(
                                       itemCount: todoItems.length,
                                       itemBuilder: (context, index) {
@@ -170,18 +135,18 @@ class TodoCategory extends StatelessWidget {
                                             );
                                           },
                                           child: Card(
-                                            color: category.value.bgColor
-                                                .withOpacity(0.7),
+                                            elevation: 2,
+                                            color: Colors.white,
                                             child: ListTile(
                                               onTap: () {
                                                 controller.setTodoDone(
-                                                  category.value.title,
+                                                  category,
                                                   index,
                                                 );
                                               },
                                               onLongPress: () {
                                                 controller.setTodoStar(
-                                                  category.value.title,
+                                                  category,
                                                   index,
                                                 );
                                               },
@@ -190,6 +155,10 @@ class TodoCategory extends StatelessWidget {
                                                     ? '★ ${todoItems[index].title}'
                                                     : todoItems[index].title,
                                                 style: TextStyle(
+                                                  color: todoItems[index].done
+                                                      ? category.value.fontColor
+                                                      : category.value.fontColor
+                                                          .withOpacity(0.6),
                                                   decoration:
                                                       todoItems[index].done
                                                           ? TextDecoration
@@ -198,7 +167,7 @@ class TodoCategory extends StatelessWidget {
                                                   fontWeight:
                                                       todoItems[index].star
                                                           ? FontWeight.w700
-                                                          : FontWeight.w400,
+                                                          : FontWeight.w500,
                                                 ),
                                               ),
                                               // 여기에 ListTile 구성요소들을 추가

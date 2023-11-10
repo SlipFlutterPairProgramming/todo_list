@@ -10,7 +10,7 @@ class AddScreen extends StatefulWidget {
 }
 
 class _AddScreenState extends State<AddScreen> {
-  String _selectedValue = '';
+  Category _selectedCategory = Category.unknown;
   Color _selectedBgColor = const Color(0xffC8C8C8);
   Color _selectedFontColor = const Color(0xff000000);
 
@@ -96,30 +96,10 @@ class _AddScreenState extends State<AddScreen> {
               const SizedBox(
                 height: 20,
               ),
-              todoRow(
-                title: 'To Do',
-                description: 'Urgent, Important Things.',
-                fontColor: const Color(0xffD0F4A4),
-                bgColor: const Color(0xffFF8181),
-              ),
-              todoRow(
-                title: 'To Schedule',
-                description: 'Not Urgent, Important Things.',
-                bgColor: const Color(0xffFCE38A),
-                fontColor: const Color(0xff6677bb),
-              ),
-              todoRow(
-                title: 'To Delegate',
-                description: 'Urgent, Not Important Things.',
-                bgColor: const Color(0xffEAFFD0),
-                fontColor: const Color(0xffD297F3),
-              ),
-              todoRow(
-                title: 'To Delete',
-                description: 'Not Urgent, Not Important Things.',
-                bgColor: const Color(0xff95E1D3),
-                fontColor: const Color(0xffE27C7F),
-              ),
+              todoRow(Category.toDo),
+              todoRow(Category.toSchedule),
+              todoRow(Category.toDelegate),
+              todoRow(Category.toDelete),
               const SizedBox(
                 height: 40,
               ),
@@ -129,13 +109,13 @@ class _AddScreenState extends State<AddScreen> {
                     child: OutlinedButton(
                       onPressed: () {
                         controller.addTodoItem(
-                            _selectedValue, textController.text);
+                            _selectedCategory, textController.text);
                         Navigator.pop(context);
                       },
                       style: ButtonStyle(
                         side: MaterialStateProperty.all(BorderSide(
-                          color: _selectedFontColor, // 테두리 색상을 파란색으로 설정
-                          width: 2.0, // 테두리 두께를 2.0으로 설정
+                          color: _selectedFontColor,
+                          width: 2.0,
                         )),
                       ),
                       child: Text(
@@ -156,18 +136,13 @@ class _AddScreenState extends State<AddScreen> {
     );
   }
 
-  GestureDetector todoRow({
-    required String title,
-    required String description,
-    required Color fontColor,
-    required Color bgColor,
-  }) {
+  GestureDetector todoRow(Category category) {
     return GestureDetector(
       onTap: () {
         setState(() {
-          _selectedBgColor = bgColor;
-          _selectedFontColor = fontColor;
-          _selectedValue = title;
+          _selectedBgColor = category.value.bgColor;
+          _selectedFontColor = category.value.fontColor;
+          _selectedCategory = category;
         });
       },
       child: Padding(
@@ -179,10 +154,12 @@ class _AddScreenState extends State<AddScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
+                  category.value.title,
                   style: TextStyle(
                     fontSize: 22,
-                    color: _selectedValue == title ? fontColor : Colors.black,
+                    color: _selectedCategory == category
+                        ? category.value.fontColor
+                        : Colors.black,
                     fontFamily: "Jalnan",
                   ),
                 ),
@@ -190,23 +167,25 @@ class _AddScreenState extends State<AddScreen> {
                   height: 12,
                 ),
                 Text(
-                  description,
+                  category.value.description,
                   style: TextStyle(
                     fontSize: 16,
-                    color: _selectedValue == title ? fontColor : Colors.black,
+                    color: _selectedCategory == category
+                        ? category.value.fontColor
+                        : Colors.black,
                   ),
                 ),
               ],
             ),
             Radio(
-              value: title,
-              activeColor: fontColor,
-              groupValue: _selectedValue,
+              value: category,
+              activeColor: category.value.fontColor,
+              groupValue: _selectedCategory,
               onChanged: (value) {
                 setState(() {
-                  _selectedValue = value.toString();
-                  _selectedBgColor = bgColor;
-                  _selectedFontColor = fontColor;
+                  _selectedCategory = value!;
+                  _selectedBgColor = category.value.bgColor;
+                  _selectedFontColor = category.value.fontColor;
                 });
               },
             ),
