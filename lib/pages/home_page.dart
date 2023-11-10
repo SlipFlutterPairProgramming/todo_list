@@ -4,9 +4,7 @@ import 'package:todo_bentley/main.dart';
 import 'package:todo_bentley/pages/add_page.dart';
 
 class HomeScreen extends StatelessWidget {
-  HomeScreen({super.key});
-
-  final TodoController controller = Get.put(TodoController());
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +64,7 @@ class TodoCategory extends StatelessWidget {
 
       bool isClicked = Get.find<TodoController>().selectedCategory.value != '';
 
-      var todoItems = controller.todoList[category.value.title];
+      var todoItems = controller.todoList[category];
       return Flexible(
         flex: isSelected ? 3 : 1,
         child: GestureDetector(
@@ -130,7 +128,7 @@ class TodoCategory extends StatelessWidget {
                                           ),
                                           onDismissed: (direction) {
                                             controller.deleteTodo(
-                                              category.value.title,
+                                              category,
                                               index,
                                             );
                                           },

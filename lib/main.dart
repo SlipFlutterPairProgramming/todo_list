@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:todo_bentley/pages/home_page.dart';
 
 void main() {
+  Get.put(TodoController());
   runApp(const MyApp());
 }
 
@@ -103,7 +104,7 @@ class TodoController extends GetxController {
   }
 
   // 할 일 항목을 삭제합니다.
-  void deleteTodo(String category, int index) {
+  void deleteTodo(Category category, int index) {
     todoList[category]?.removeAt(index);
     todoList[category]?.refresh();
   }
@@ -114,7 +115,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: HomeScreen(),
     );
   }
