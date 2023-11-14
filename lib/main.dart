@@ -120,6 +120,7 @@ class _TodoGroupWidgetState extends State<TodoGroupWidget>
                 checkStateAndAction();
               },
               child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6.5),
                 color: bg,
                 child: Column(
                   children: [
