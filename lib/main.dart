@@ -47,7 +47,7 @@ class _TodoWidgetState extends State<TodoWidget> {
                   child: Text(
                     "+",
                     style: TextStyle(
-                      color: getGroupColors(Group.toDo).$2,
+                      color: Group.toDo.fg,
                       fontSize: 20,
                     ),
                   ),
@@ -97,7 +97,6 @@ class _TodoGroupWidgetState extends State<TodoGroupWidget>
   @override
   Widget build(BuildContext context) {
     final ctrl = Get.find<TodoController>();
-    final (bg, fg) = getGroupColors(widget.group);
     return AnimatedBuilder(
       animation: anmCtrl,
       builder: (_, __) => Obx(
@@ -117,15 +116,15 @@ class _TodoGroupWidgetState extends State<TodoGroupWidget>
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6.5),
-                color: bg,
+                color: widget.group.bg,
                 child: Column(
                   children: [
                     Row(
                       children: [
                         Text(
-                          widget.group.name + flex.value.toString(),
+                          widget.group.title,
                           style: TextStyle(
-                            color: fg,
+                            color: widget.group.fg,
                             fontSize: 20,
                           ),
                         ),

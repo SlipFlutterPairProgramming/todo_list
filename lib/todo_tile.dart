@@ -7,31 +7,44 @@ import 'package:todo_bentley/todo_controller.dart';
 
 enum Group { toDo, toSchedule, toDelegate, toDelete }
 
-(Color, Color) getGroupColors(Group group) {
-  switch (group) {
-    case Group.toDo:
-      return (
-        const Color.fromRGBO(228, 120, 120, 1),
-        const Color.fromARGB(255, 226, 235, 128),
-      );
-    case Group.toSchedule:
-      return (
-        const Color.fromARGB(255, 233, 210, 145),
-        const Color.fromARGB(255, 84, 37, 212),
-      );
-    case Group.toDelegate:
-      return (
-        const Color.fromARGB(255, 187, 237, 175),
-        const Color.fromARGB(255, 195, 127, 219),
-      );
-    case Group.toDelete:
-      return (
-        const Color.fromARGB(255, 102, 167, 169),
-        const Color.fromARGB(255, 186, 90, 90),
-      );
+extension GroupExtension on Group {
+  Color get fg {
+    switch (this) {
+      case Group.toDo:
+        return const Color.fromARGB(255, 226, 235, 128);
+      case Group.toSchedule:
+        return const Color.fromARGB(255, 84, 37, 212);
+      case Group.toDelegate:
+        return const Color.fromARGB(255, 195, 127, 219);
+      case Group.toDelete:
+        return const Color.fromARGB(255, 186, 90, 90);
+    }
+  }
 
-    default:
-      return (Colors.black, Colors.white);
+  Color get bg {
+    switch (this) {
+      case Group.toDo:
+        return const Color.fromRGBO(228, 120, 120, 1);
+      case Group.toSchedule:
+        return const Color.fromARGB(255, 233, 210, 145);
+      case Group.toDelegate:
+        return const Color.fromARGB(255, 187, 237, 175);
+      case Group.toDelete:
+        return const Color.fromARGB(255, 102, 167, 169);
+    }
+  }
+
+  String get title {
+    switch (this) {
+      case Group.toDo:
+        return 'ToDo';
+      case Group.toSchedule:
+        return 'ToSchedule';
+      case Group.toDelegate:
+        return 'ToDelegate';
+      case Group.toDelete:
+        return 'ToDelete';
+    }
   }
 }
 
@@ -57,7 +70,6 @@ class _TodoTileState extends State<TodoTile> {
   Offset end = Offset.zero;
   @override
   Widget build(BuildContext context) {
-    final (_, color) = getGroupColors(widget.group);
     return Expanded(
       child: GestureDetector(
         key: Key(widget.uuid),
@@ -96,11 +108,11 @@ class _TodoTileState extends State<TodoTile> {
                 child: Row(
                   children: [
                     widget.favorite
-                        ? Icon(Icons.star, color: color)
+                        ? Icon(Icons.star, color: widget.group.fg)
                         : const Text(''),
                     Text(widget.content,
                         style: TextStyle(
-                          color: color,
+                          color: widget.group.fg,
                           decoration:
                               widget.done ? TextDecoration.lineThrough : null,
                         )),
