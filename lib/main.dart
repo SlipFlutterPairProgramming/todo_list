@@ -29,12 +29,9 @@ class _TodoWidgetState extends State<TodoWidget> {
       home: Scaffold(
         body: Stack(
           children: [
-            const Column(
+            Column(
               children: [
-                TodoGroupWidget(group: Group.toDo),
-                TodoGroupWidget(group: Group.toSchedule),
-                TodoGroupWidget(group: Group.toDelegate),
-                TodoGroupWidget(group: Group.toDelete),
+                for (var group in Group.values) TodoGroupWidget(group: group),
               ],
             ),
             Row(
@@ -108,12 +105,11 @@ class _TodoGroupWidgetState extends State<TodoGroupWidget>
           checkStateAndAction();
           return Expanded(
             //추후 animation을 위해 flex를 크게 잡음
-            flex:
-                ctrl.selectedGroup.value == Group.all ? flex.value : flex.value,
+            flex: ctrl.selectedGroup.value == null ? flex.value : flex.value,
             child: GestureDetector(
               onTap: () {
                 if (ctrl.selectedGroup.value == widget.group) {
-                  ctrl.selectedGroup.value = Group.all;
+                  ctrl.selectedGroup.value = null;
                 } else {
                   ctrl.selectedGroup.value = widget.group;
                 }

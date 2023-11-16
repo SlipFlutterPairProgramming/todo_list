@@ -27,21 +27,20 @@ class _InputingDialogState extends State<InputingDialog> {
           Column(
             children: [
               for (var g in Group.values)
-                if (g != Group.all)
-                  ListTile(
-                    title: Text(g.name),
-                    leading: Radio<Group>(
-                      value: g,
-                      groupValue: selectedGrop,
-                      onChanged: (Group? value) {
-                        if (value != null) {
-                          setState(() {
-                            selectedGrop = value;
-                          });
-                        }
-                      },
-                    ),
-                  )
+                ListTile(
+                  title: Text(g.name),
+                  leading: Radio<Group>(
+                    value: g,
+                    groupValue: selectedGrop,
+                    onChanged: (Group? value) {
+                      if (value != null) {
+                        setState(() {
+                          selectedGrop = value;
+                        });
+                      }
+                    },
+                  ),
+                )
             ],
           ),
           TextField(

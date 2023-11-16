@@ -15,7 +15,7 @@ class TodoController extends GetxController {
       content: 'do',
     ),
   ].obs;
-  final selectedGroup = Group.all.obs;
+  final selectedGroup = Rx<Group?>(null);
 
   void removeTile(String uuid) {
     list.removeWhere((TodoTile tile) => tile.uuid == uuid);

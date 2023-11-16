@@ -5,7 +5,7 @@ import 'package:uuid/uuid.dart';
 import 'package:todo_bentley/main.dart';
 import 'package:todo_bentley/todo_controller.dart';
 
-enum Group { all, toDo, toSchedule, toDelegate, toDelete }
+enum Group { toDo, toSchedule, toDelegate, toDelete }
 
 (Color, Color) getGroupColors(Group group) {
   switch (group) {
