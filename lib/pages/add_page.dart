@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:uuid/uuid.dart';
 import 'package:todo_bentley/main.dart';
-import 'package:uuid/v4.dart';
 
 class AddScreen extends StatefulWidget {
   const AddScreen({super.key});
@@ -43,6 +43,8 @@ class _AddScreenState extends State<AddScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var uuid = const Uuid();
+    String uuidV4 = uuid.v4();
     final apiController = Get.put(ApiController());
 
     return Scaffold(
@@ -126,8 +128,8 @@ class _AddScreenState extends State<AddScreen> {
                     child: OutlinedButton(
                       onPressed: () {
                         apiController.fetchApiData({
-                          "uuid": UuidV4,
-                          "category": _selectedCategory,
+                          "uuid": uuidV4,
+                          "category": "To Do",
                           "content": textController.text,
                           "favorite": false,
                           "done": false

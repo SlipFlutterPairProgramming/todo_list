@@ -122,15 +122,15 @@ class ApiController extends GetxController {
 
   var apiData = ''.obs;
 
-  // String url = "http://ec2-3-22-101-127.us-east-2.compute.amazonaws.com:8000";
-  String url = "http://naver.com";
+  String url = "http://ec2-3-22-101-127.us-east-2.compute.amazonaws.com:8000";
+  // String url = "http://naver.com";
 
   // API 호출 메서드
   Future<void> fetchApiData(
       Map<String, dynamic> data, String devId, String method) async {
     final response = await http.post(
       Uri.parse("$url/$devId/$method"),
-      headers: <String, String> {
+      headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(data),
