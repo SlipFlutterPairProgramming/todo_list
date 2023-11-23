@@ -8,11 +8,11 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Color(0xffFF8181),
+    return Scaffold(
+      backgroundColor: const Color(0xffFF8181),
       body: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 50,
           ),
           TodoCategory(
@@ -33,6 +33,12 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
+class TodoProvider extends GetConnect {
+  Future<Response> getList(Map data, String devId) => post(
+      "http://ec2-3-22-101-127.us-east-2.compute.amazonaws.com:8000/get/$devId",
+      data);
+}
+
 class TodoCategoryData {
   final String description, title;
   final Color bgColor;
@@ -48,8 +54,8 @@ class TodoCategoryData {
 
 class TodoCategory extends StatelessWidget {
   final Category category;
-
-  const TodoCategory({
+  final prov = TodoProvider();
+  TodoCategory({
     super.key,
     required this.category,
   });
@@ -63,12 +69,14 @@ class TodoCategory extends StatelessWidget {
           category.value.title;
 
       bool isClicked = Get.find<TodoController>().selectedCategory.value != '';
-
       var todoItems = controller.todoList[category];
+
       return Flexible(
         flex: isSelected ? 3 : 1,
         child: GestureDetector(
-          onTap: () => controller.changeCategory(category.value.title),
+          onTap: () {
+            controller.changeCategory(category.value.title);
+          },
           child: Container(
             decoration: BoxDecoration(color: category.value.bgColor),
             child: Padding(
@@ -88,14 +96,15 @@ class TodoCategory extends StatelessWidget {
                         ),
                       ),
                       GestureDetector(
-                        onTap: () => {
+                        onTap: () {
+                          print(prov.getList(<String, String>{}, 'kh_hy'));
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => const AddScreen(),
                               fullscreenDialog: true,
                             ),
-                          )
+                          );
                         },
                         child: Icon(
                           category == Category.toDo ? Icons.add_outlined : null,
