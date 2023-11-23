@@ -34,9 +34,11 @@ class HomeScreen extends StatelessWidget {
 }
 
 class TodoProvider extends GetConnect {
-  Future<Response> getList(Map data, String devId) => post(
-      "http://ec2-3-22-101-127.us-east-2.compute.amazonaws.com:8000/get/$devId",
+  Future<Response> getList(Map data, String devId) async => await post(
+      "http://ec2-3-22-101-127.us-east-2.compute.amazonaws.com:8000/$devId/get",
       data);
+
+  Future<Response> putList(String deviceId) async => await post('http://ec2-3-22-101-127.us-east-2.compute.amazonaws.com:8000/$deviceId/put', deviceId);
 }
 
 class TodoCategoryData {
@@ -55,6 +57,19 @@ class TodoCategoryData {
 class TodoCategory extends StatelessWidget {
   final Category category;
   final prov = TodoProvider();
+
+  // Future fetchData() async {
+  //   final response = await http.get(Uri.parse('https://jsonplaceholder.typicode.com/posts/1'));
+  //
+  //   if (response.statusCode == 200) {
+  //     // If the server returns a 200 OK response, parse the JSON data
+  //     return json.decode(response.body);
+  //   } else {
+  //     // If the server did not return a 200 OK response, throw an exception.
+  //     throw Exception('Failed to load data');
+  //   }
+  // }
+
   TodoCategory({
     super.key,
     required this.category,
@@ -96,8 +111,9 @@ class TodoCategory extends StatelessWidget {
                         ),
                       ),
                       GestureDetector(
-                        onTap: () {
-                          print(prov.getList(<String, String>{}, 'kh_hy'));
+                        onTap: () async {
+                          final test =  await prov.getList(<String, String>{}, 'kh_hy');
+                          print("test2 ${test.statusCode}");
                           Navigator.push(
                             context,
                             MaterialPageRoute(
