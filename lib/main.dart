@@ -112,11 +112,9 @@ class TodoController extends GetxController {
   }
 }
 
-enum Method { get, put, delete }
-
 class ApiController extends GetxController {
   String devId;
-  Method method;
+  String method;
 
   ApiController({required this.devId, required this.method});
 

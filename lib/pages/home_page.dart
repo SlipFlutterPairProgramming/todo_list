@@ -12,6 +12,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String devId = "";
+
+
   // TextEditingController 인스턴스를 생성합니다.
   final textController = TextEditingController();
 
@@ -33,6 +35,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final apiController = Get.put(ApiController(devId: textController.text, method: "get"));
+
     return Scaffold(
       backgroundColor: const Color(0xffFF8181),
       body: Column(
@@ -47,6 +51,12 @@ class _HomeScreenState extends State<HomeScreen> {
               fontWeight: FontWeight.w700,
             ),
           ),
+        Obx(() => Text(apiController.apiData.value,),),
+          OutlinedButton(
+              onPressed: () {
+                apiController.fetchApiData();
+              },
+              child: Text("get test")),
           TextField(
             controller: textController,
             onChanged: (value) {
