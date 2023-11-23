@@ -3,6 +3,7 @@ from collections import defaultdict, namedtuple
 import asyncio
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 
@@ -45,6 +46,14 @@ class DB:
 
 db = DB()
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.post("/{dev_id}/get")
 async def get_todos(dev_id: str):
