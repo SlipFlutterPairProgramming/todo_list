@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:todo_bentley/pages/home_page.dart';
 
+import 'package:http/http.dart' as http;
+
 void main() {
   Get.put(TodoController());
   runApp(const MyApp());
@@ -110,12 +112,36 @@ class TodoController extends GetxController {
   }
 }
 
+enum Method { get, put, delete }
+
+class ApiController extends GetxController {
+  String devId;
+  Method method;
+
+  ApiController({required this.devId, required this.method});
+
+  var apiData = ''.obs;
+
+  String url = "http://ec2-3-22-101-127.us-east-2.compute.amazonaws.com:8000";
+
+  // API 호출 메서드
+  Future<void> fetchApiData() async {
+    final response = await http.post(Uri.parse("$url/$devId/$method"));
+    if (response.statusCode == 200) {
+      apiData.value = response.body;
+    } else {
+      // 오류 처리
+      print('Failed to load data');
+    }
+  }
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: HomeScreen(),
     );
   }

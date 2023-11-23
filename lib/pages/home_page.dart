@@ -4,7 +4,7 @@ import 'package:todo_bentley/main.dart';
 import 'package:todo_bentley/pages/add_page.dart';
 
 class HomeScreen extends StatefulWidget {
-  HomeScreen({super.key});
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -34,16 +34,19 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xffFF8181),
+      backgroundColor: const Color(0xffFF8181),
       body: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 50,
           ),
-          Text("dev_id : " + textController.text, style: TextStyle(
-            fontSize: 30,
-            fontWeight: FontWeight.w700,
-          ),),
+          Text(
+            "dev_id : ${textController.text}",
+            style: const TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
           TextField(
             controller: textController,
             onChanged: (value) {
@@ -52,16 +55,16 @@ class _HomeScreenState extends State<HomeScreen> {
               });
             },
           ),
-          TodoCategory(
+          const TodoCategory(
             category: Category.toDo,
           ),
-          TodoCategory(
+          const TodoCategory(
             category: Category.toSchedule,
           ),
-          TodoCategory(
+          const TodoCategory(
             category: Category.toDelegate,
           ),
-          TodoCategory(
+          const TodoCategory(
             category: Category.toDelete,
           ),
         ],
