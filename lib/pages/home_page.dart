@@ -3,17 +3,54 @@ import 'package:get/get.dart';
 import 'package:todo_bentley/main.dart';
 import 'package:todo_bentley/pages/add_page.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+class HomeScreen extends StatefulWidget {
+  HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  String devId = "";
+  // TextEditingController 인스턴스를 생성합니다.
+  final textController = TextEditingController();
+
+  @override
+  void dispose() {
+    textController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    textController.addListener(() {
+      setState(() {
+        devId = textController.text;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       backgroundColor: Color(0xffFF8181),
       body: Column(
         children: [
           SizedBox(
             height: 50,
+          ),
+          Text("dev_id : " + textController.text, style: TextStyle(
+            fontSize: 30,
+            fontWeight: FontWeight.w700,
+          ),),
+          TextField(
+            controller: textController,
+            onChanged: (value) {
+              setState(() {
+                devId = value;
+              });
+            },
           ),
           TodoCategory(
             category: Category.toDo,
