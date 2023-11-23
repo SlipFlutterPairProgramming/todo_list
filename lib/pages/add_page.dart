@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:todo_bentley/main.dart';
+import 'package:uuid/v4.dart';
 
 class AddScreen extends StatefulWidget {
   const AddScreen({super.key});
@@ -16,18 +17,34 @@ class _AddScreenState extends State<AddScreen> {
 
   final TodoController controller = Get.find();
 
-  // TextEditingController 인스턴스를 생성합니다.
   final textController = TextEditingController();
+
+  String devId = "";
+
+  final textUserController = TextEditingController();
 
   @override
   void dispose() {
     // 위젯이 dispose 될 때 컨트롤러도 dispose 해줍니다.
     textController.dispose();
+    textUserController.dispose();
     super.dispose();
   }
 
   @override
+  void initState() {
+    super.initState();
+    textUserController.addListener(() {
+      setState(() {
+        devId = textUserController.text;
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final apiController = Get.put(ApiController());
+
     return Scaffold(
       backgroundColor: _selectedBgColor,
       appBar: AppBar(
@@ -108,6 +125,13 @@ class _AddScreenState extends State<AddScreen> {
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () {
+                        apiController.fetchApiData({
+                          "uuid": UuidV4,
+                          "category": _selectedCategory,
+                          "content": textController.text,
+                          "favorite": false,
+                          "done": false
+                        }, devId, "put");
                         controller.addTodoItem(
                             _selectedCategory, textController.text);
                         Navigator.pop(context);
