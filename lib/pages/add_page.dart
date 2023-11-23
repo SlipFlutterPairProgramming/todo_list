@@ -131,9 +131,10 @@ class _AddScreenState extends State<AddScreen> {
                           "content": textController.text,
                           "favorite": false,
                           "done": false
-                        }, devId, "put");
-                        controller.addTodoItem(
-                            _selectedCategory, textController.text);
+                        }, controller.devId.value, "put");
+
+                        // controller.addTodoItem(
+                        //     _selectedCategory, textController.text);
                         Navigator.pop(context);
                       },
                       style: ButtonStyle(

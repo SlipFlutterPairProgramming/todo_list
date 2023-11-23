@@ -29,6 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final apiController = Get.put(ApiController());
+    final TodoController controller = Get.find();
 
     return Scaffold(
       backgroundColor: const Color(0xffFF8181),
@@ -38,22 +39,23 @@ class _HomeScreenState extends State<HomeScreen> {
             height: 50,
           ),
           Text(
-            "dev_id : ${textController.text}",
+            "dev_id : ${controller.devId.value}",
             style: const TextStyle(
               fontSize: 30,
               fontWeight: FontWeight.w700,
             ),
           ),
+          Obx(() => Text(apiController.apiData.value)),
           OutlinedButton(
               onPressed: () {
-                apiController.fetchApiData({}, devId, "get");
+                apiController.fetchApiData({}, controller.devId.value, "get");
               },
               child: const Text("refetch data")),
           TextField(
             controller: textController,
             onChanged: (value) {
               setState(() {
-                devId = value;
+                controller.devId.value = value;
               });
             },
           ),
