@@ -61,14 +61,6 @@ class TodoItem {
 }
 
 class TodoController extends GetxController {
-  var devId = ''.obs;
-
-  @override
-  void onInit() {
-    super.onInit();
-    devId.value = const Uuid().v4();
-  }
-
   var selectedCategory = ''.obs;
 
   var todoList = {
@@ -127,10 +119,17 @@ class ApiController extends GetxController {
   var apiData = ''.obs;
   final todoController = Get.put(TodoController);
 
+  late var devId;
+
+  @override
+  void onInit() {
+    super.onInit();
+    devId = const Uuid().v4();
+  }
+
   String url = "http://ec2-3-22-101-127.us-east-2.compute.amazonaws.com:8000";
 
-  Future<void> fetchApiData(
-      Map<String, dynamic> data, String devId, String method) async {
+  Future<void> fetchApiData(Map<String, dynamic> data, String method) async {
     final response = await http.post(
       Uri.parse("$url/$devId/$method"),
       headers: <String, String>{

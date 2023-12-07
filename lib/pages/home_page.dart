@@ -10,8 +10,8 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final data = apiController.fetchApiData({}, controller.devId.value, "get");
-    print(apiController.apiData.value);
+    final data = apiController.fetchApiData({}, "get");
+    print("test" + apiController.apiData.value);
     return const Scaffold(
       backgroundColor: Color(0xffFF8181),
       body: Column(
@@ -102,7 +102,9 @@ class TodoCategory extends StatelessWidget {
                           )
                         },
                         child: Icon(
-                          category == Category.toDo ? Icons.add_outlined : null,
+                          category == Catepgory.toDo
+                              ? Icons.add_outlined
+                              : null,
                           color: category.value.fontColor,
                           size: 32,
                         ),

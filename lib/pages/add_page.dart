@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:todo_bentley/main.dart';
+import 'package:uuid/uuid.dart';
+import 'package:uuid/v4.dart';
 
 class AddScreen extends StatefulWidget {
   const AddScreen({super.key});
@@ -14,7 +16,8 @@ class _AddScreenState extends State<AddScreen> {
   Color _selectedBgColor = const Color(0xffC8C8C8);
   Color _selectedFontColor = const Color(0xff000000);
 
-  final TodoController controller = Get.find();
+  // final TodoController controller = Get.find();
+  final ApiController addController = Get.find();
 
   // TextEditingController 인스턴스를 생성합니다.
   final textController = TextEditingController();
@@ -45,7 +48,7 @@ class _AddScreenState extends State<AddScreen> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(
+          padding: EdgeInsets.symmetric(
             horizontal: 20,
             vertical: 30,
           ),
@@ -108,8 +111,15 @@ class _AddScreenState extends State<AddScreen> {
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () {
-                        controller.addTodoItem(
-                            _selectedCategory, textController.text);
+                        // controller.addTodoItem(
+                        //     _selectedCategory, textController.text);
+                        addController.fetchApiData({
+                          "uuid": Uuid().v4(),
+                          "category": "To Do",
+                          "content": textController.text,
+                          "favorite": false,
+                          "done": false
+                        }, "put");
                         Navigator.pop(context);
                       },
                       style: ButtonStyle(
