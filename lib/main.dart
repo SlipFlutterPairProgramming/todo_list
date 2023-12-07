@@ -74,6 +74,13 @@ class TodoProvider extends GetConnect {
           "done": todoItem.done,
         });
   }
+
+  Future<Response> deleteTodos(String devId, TodoItem todoItem) {
+    String uuid = todoItem.title;
+    return post(
+        "http://ec2-3-22-101-127.us-east-2.compute.amazonaws.com:8000/$devId/delete?uuid=$uuid",
+        {});
+  }
 }
 
 class TodoController extends GetxController {
@@ -135,9 +142,12 @@ class TodoController extends GetxController {
   }
 
   // 할 일 항목을 삭제합니다.
-  void deleteTodo(Category category, int index) {
+  void deleteTodo(Category category, int index) async {
+    await todoProvider.deleteTodos("kh", todoList[category]![index]);
+
     todoList[category]?.removeAt(index);
     todoList[category]?.refresh();
+
   }
 }
 
