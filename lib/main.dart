@@ -55,6 +55,14 @@ class TodoItem {
   TodoItem({required this.title, this.star = false, this.done = false});
 }
 
+class TodoProvider extends GetConnect {
+  Future<Response> getTodos(String devId) {
+    return post(
+        "http://ec2-3-22-101-127.us-east-2.compute.amazonaws.com:8000/$devId/get",
+        {});
+  }
+}
+
 class TodoController extends GetxController {
   var selectedCategory = ''.obs;
 
