@@ -162,65 +162,15 @@ class TodoCategory extends StatelessWidget {
                                         ),
                                       ),
                                     )
-                                  : ListView.builder(
-                                      itemCount: todoItems.length,
-                                      itemBuilder: (context, index) {
-                                        return Dismissible(
-                                          key: Key(
-                                            todoItems[index].title +
-                                                index.toString(),
-                                          ),
-                                          onDismissed: (direction) {
-                                            controller.deleteTodo(
-                                              category,
-                                              index,
-                                            );
-                                          },
-                                          child: Card(
-                                            elevation: 1.2,
-                                            color: todoItems[index].done
-                                                ? Colors.white.withOpacity(0.4)
-                                                : Colors.white,
-                                            child: ListTile(
-                                              onTap: () {
-                                                controller.setTodoDone(
-                                                  category,
-                                                  index,
-                                                );
-                                              },
-                                              onLongPress: () {
-                                                controller.setTodoStar(
-                                                  category,
-                                                  index,
-                                                );
-                                              },
-                                              title: Text(
-                                                todoItems[index].star
-                                                    ? '★ ${todoItems[index].title}'
-                                                    : todoItems[index].title,
-                                                style: TextStyle(
-                                                  color: todoItems[index].done
-                                                      ? category.value.fontColor
-                                                          .withOpacity(0.6)
-                                                      : category
-                                                          .value.fontColor,
-                                                  decoration:
-                                                      todoItems[index].done
-                                                          ? TextDecoration
-                                                              .lineThrough
-                                                          : TextDecoration.none,
-                                                  fontWeight:
-                                                      todoItems[index].star
-                                                          ? FontWeight.w700
-                                                          : FontWeight.w500,
-                                                ),
-                                              ),
-                                              // 여기에 ListTile 구성요소들을 추가
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    ))
+                                  : ListView(
+                                      children: [
+                                        for (var (index, item)
+                                            in todoItems.indexed)
+                                          TodoTile(item, category, index)
+                                        //todo: make index to uuid
+                                      ],
+                                    ),
+                            )
                           : const SizedBox()
                       : Text(
                           category.value.description,
@@ -236,5 +186,63 @@ class TodoCategory extends StatelessWidget {
         ),
       );
     });
+  }
+}
+
+class TodoTile extends StatelessWidget {
+  TodoTile(
+    this.item,
+    this.category,
+    this.index, {
+    super.key,
+  });
+  final TodoItem item;
+  final int index;
+  final Category category;
+  final TodoController controller = Get.find<TodoController>();
+
+  @override
+  Widget build(BuildContext context) {
+    return Dismissible(
+      key: Key(
+        item.title + index.toString(),
+      ),
+      onDismissed: (direction) {
+        controller.deleteTodo(
+          category,
+          index,
+        );
+      },
+      child: Card(
+        elevation: 1.2,
+        color: item.done ? Colors.white.withOpacity(0.4) : Colors.white,
+        child: ListTile(
+          onTap: () {
+            controller.setTodoDone(
+              category,
+              index,
+            );
+          },
+          onLongPress: () {
+            controller.setTodoStar(
+              category,
+              index,
+            );
+          },
+          title: Text(
+            item.star ? '★ ${item.title}' : item.title,
+            style: TextStyle(
+              color: item.done
+                  ? category.value.fontColor.withOpacity(0.6)
+                  : category.value.fontColor,
+              decoration:
+                  item.done ? TextDecoration.lineThrough : TextDecoration.none,
+              fontWeight: item.star ? FontWeight.w700 : FontWeight.w500,
+            ),
+          ),
+          // 여기에 ListTile 구성요소들을 추가
+        ),
+      ),
+    );
   }
 }
