@@ -66,21 +66,23 @@ class TodoProvider extends GetConnect {
 class TodoController extends GetxController {
   TodoController(String devId) {
     todoProvider.getTodos(devId).then((value) {
-      var todos = value.body["todos"];
+      var resTodo = value.body["todos"];
       var todo = {
-        Category.toDo: <TodoItem>[
-        ],
-        Category.toSchedule: <TodoItem>[
-        ],
-        Category.toDelegate: <TodoItem>[
-        ],
+        Category.toDo: <TodoItem>[],
+        Category.toSchedule: <TodoItem>[],
+        Category.toDelegate: <TodoItem>[],
         Category.toDelete: <TodoItem>[],
       };
-      for(var i = 0; i < todos.length; i++) {
-        String category = todos[i]["category"];
-        todo[Category.values.byName(category)]?.add(
-          TodoItem(title: todos[i]["content"], done: todos[i]["done"], star: todos[i]["favorite"])
-        );
+      for (var item in resTodo) {
+        String category = item["category"];
+        todo[Category.values.byName(category)]?.add(TodoItem(
+            title: item["content"],
+            done: item["done"],
+            star: item["favorite"]));
+      }
+      print(todo);
+      for (var category in todo.keys) {
+        todoList[category]!.value = todo[category]!;
       }
     });
   }
@@ -90,20 +92,9 @@ class TodoController extends GetxController {
   var selectedCategory = ''.obs;
 
   var todoList = {
-    Category.toDo: <TodoItem>[
-      TodoItem(title: 'Buy groceries', done: true),
-      TodoItem(title: 'Walk the dog', star: true),
-      TodoItem(title: 'Old newsletters'),
-      TodoItem(title: 'Unused files'),
-    ].obs,
-    Category.toSchedule: <TodoItem>[
-      TodoItem(title: 'Doctor appointment'),
-      TodoItem(title: 'Team meeting'),
-      TodoItem(title: 'Write monthly report'),
-    ].obs,
-    Category.toDelegate: <TodoItem>[
-      TodoItem(title: 'Update website'),
-    ].obs,
+    Category.toDo: <TodoItem>[].obs,
+    Category.toSchedule: <TodoItem>[].obs,
+    Category.toDelegate: <TodoItem>[].obs,
     Category.toDelete: <TodoItem>[].obs,
   }; // 각 카테고리의 할 일 목록도 관찰 가능한 리스트로 정의합니다.
 
@@ -139,8 +130,6 @@ class TodoController extends GetxController {
     todoList[category]?.removeAt(index);
     todoList[category]?.refresh();
   }
-
-
 }
 
 class MyApp extends StatelessWidget {
