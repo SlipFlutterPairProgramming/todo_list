@@ -61,26 +61,33 @@ class TodoProvider extends GetConnect {
         "http://ec2-3-22-101-127.us-east-2.compute.amazonaws.com:8000/$devId/get",
         {});
   }
+
+  Future<Response> putTodos(
+      String devId, TodoItem todoItem, Category category) {
+    return post(
+        "http://ec2-3-22-101-127.us-east-2.compute.amazonaws.com:8000/$devId/put",
+        {
+          "uuid": todoItem.title,
+          "content": todoItem.title,
+          "category": category.name,
+          "favorite": todoItem.star,
+          "done": todoItem.done,
+        });
+  }
 }
 
 class TodoController extends GetxController {
   TodoController(String devId) {
     todoProvider.getTodos(devId).then((value) {
       var resTodo = value.body["todos"];
-      var todo = {
-        Category.toDo: <TodoItem>[],
-        Category.toSchedule: <TodoItem>[],
-        Category.toDelegate: <TodoItem>[],
-        Category.toDelete: <TodoItem>[],
-      };
+      var todo = {for (var item in todoList.keys) item: todoList[item]!.value};
       for (var item in resTodo) {
         String category = item["category"];
-        todo[Category.values.byName(category)]?.add(TodoItem(
+        todo[Category.values.byName(category)]!.add(TodoItem(
             title: item["content"],
             done: item["done"],
             star: item["favorite"]));
       }
-      print(todo);
       for (var category in todo.keys) {
         todoList[category]!.value = todo[category]!;
       }
@@ -103,8 +110,10 @@ class TodoController extends GetxController {
   }
 
   // 새로운 할 일 항목을 특정 카테고리에 추가합니다.
-  void addTodoItem(Category category, String todoItem) {
-    todoList[category]?.add(TodoItem(title: todoItem));
+  void addTodoItem(Category category, String content) async {
+    final todoItem = TodoItem(title: content);
+    todoList[category]?.add(todoItem);
+    await todoProvider.putTodos("kh", todoItem, category);
   }
 
   // 할 일 항목의 완료 상태를 토글합니다.
