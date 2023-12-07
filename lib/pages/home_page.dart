@@ -4,10 +4,14 @@ import 'package:todo_bentley/main.dart';
 import 'package:todo_bentley/pages/add_page.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  HomeScreen({super.key});
+  final TodoController controller = Get.find();
+  final apiController = Get.put(ApiController());
 
   @override
   Widget build(BuildContext context) {
+    final data = apiController.fetchApiData({}, controller.devId.value, "get");
+    print(apiController.apiData.value);
     return const Scaffold(
       backgroundColor: Color(0xffFF8181),
       body: Column(

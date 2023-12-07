@@ -1,6 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:todo_bentley/pages/home_page.dart';
+import 'package:uuid/uuid.dart';
+
+import 'package:http/http.dart' as http;
 
 void main() {
   Get.put(TodoController());
@@ -56,6 +61,14 @@ class TodoItem {
 }
 
 class TodoController extends GetxController {
+  var devId = ''.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    devId.value = const Uuid().v4();
+  }
+
   var selectedCategory = ''.obs;
 
   var todoList = {
@@ -110,12 +123,37 @@ class TodoController extends GetxController {
   }
 }
 
+class ApiController extends GetxController {
+  var apiData = ''.obs;
+  final todoController = Get.put(TodoController);
+
+  String url = "http://ec2-3-22-101-127.us-east-2.compute.amazonaws.com:8000";
+
+  Future<void> fetchApiData(
+      Map<String, dynamic> data, String devId, String method) async {
+    final response = await http.post(
+      Uri.parse("$url/$devId/$method"),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode == 200) {
+      apiData.value = response.body;
+    } else {
+      // 오류 처리
+      print('Failed to load data');
+    }
+  }
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       home: HomeScreen(),
     );
   }
