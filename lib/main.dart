@@ -127,11 +127,17 @@ class ApiController extends GetxController {
     devId = const Uuid().v4();
   }
 
-  String url = "http://ec2-3-22-101-127.us-east-2.compute.amazonaws.com:8000";
+  String url = "ec2-3-22-101-127.us-east-2.compute.amazonaws.com:8000";
 
-  Future<void> fetchApiData(Map<String, dynamic> data, String method) async {
+  Future<void> fetchApiData(Map<String, dynamic> data, String method,
+      {Map<String, dynamic>? queryParameters}) async {
+    var uri = Uri.http(
+      url,
+      '/$devId/$method',
+      queryParameters,
+    );
     final response = await http.post(
-      Uri.parse("$url/$devId/$method"),
+      uri,
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -157,6 +163,13 @@ class Test {
         devId: json['dev_id'],
         todos: List<Todo>.from(json['todos'].map((x) => Todo.fromJson(x))),
       );
+
+  // 주어진 Category와 일치하는 Todo 요소들만 필터링하여 반환하는 메소드
+  List<Todo> filterTodosByCategory(Category category) {
+    return todos
+        .where((todo) => parseCategory(todo.category) == category)
+        .toList();
+  }
 }
 
 class Todo {
@@ -181,6 +194,22 @@ class Todo {
         favorite: json['favorite'],
         done: json['done'],
       );
+}
+
+Category parseCategory(String categoryStr) {
+  // 'Category.toDo' 같은 문자열에서 마지막 부분만 추출
+  String enumValue = categoryStr.split('.').last;
+
+  // 모든 Category 열거형 값을 순회하며 일치하는 값을 찾습니다.
+  for (Category value in Category.values) {
+    if (value.toString().split('.').last == enumValue) {
+      return value;
+    }
+  }
+
+  // 일치하는 열거형 값이 없는 경우 예외를 발생시킵니다.
+  // 혹은 기본값을 반환할 수도 있습니다.
+  throw ArgumentError('Unknown category string: $categoryStr');
 }
 
 class MyApp extends StatelessWidget {

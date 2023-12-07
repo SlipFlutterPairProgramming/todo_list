@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:todo_bentley/main.dart';
@@ -57,7 +59,7 @@ class TodoCategory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final TodoController controller = Get.find();
+    final TodoController controller = Get.find();
     final ApiController apiController = Get.put(ApiController());
     // final data = apiController.fetchApiData({}, "get");
     // Test test = Test.fromJson(data);
@@ -73,12 +75,12 @@ class TodoCategory extends StatelessWidget {
           // 에러가 발생했을 때의 처리
           return Text('Error: ${snapshot.error}');
         } else {
-          // 데이터가 정상적으로 로드되었을 때
-          final data = snapshot.data;
-          Test test = Test.fromJson(data);
-          print(test);
-          // 이제 'test' 객체를 사용하여 UI를 구성할 수 있습니다.
+          Map<String, dynamic> jsonMap =
+              jsonDecode(apiController.apiData.value);
+          Test test = Test.fromJson(jsonMap);
 
+          List<Todo> filteredTodos = test.filterTodosByCategory(category);
+          print(filteredTodos);
           return Obx(() {
             bool isSelected =
                 Get.find<TodoController>().selectedCategory.value ==
@@ -87,11 +89,10 @@ class TodoCategory extends StatelessWidget {
             bool isClicked =
                 Get.find<TodoController>().selectedCategory.value != '';
 
-            var todoItems = apiController.apiData.value;
             return Flexible(
               flex: isSelected ? 3 : 1,
               child: GestureDetector(
-                // onTap: () => controller.changeCategory(category.value.title),
+                onTap: () => controller.changeCategory(category.value.title),
                 child: Container(
                   decoration: BoxDecoration(color: category.value.bgColor),
                   child: Padding(
@@ -134,7 +135,7 @@ class TodoCategory extends StatelessWidget {
                         isClicked
                             ? isSelected
                                 ? Expanded(
-                                    child: todoItems.isEmpty
+                                    child: test.todos.isEmpty
                                         ? Center(
                                             child: Text(
                                               "Please create a Todo item.",
@@ -144,14 +145,20 @@ class TodoCategory extends StatelessWidget {
                                               ),
                                             ),
                                           )
-                                        : ListView(
-                                            // children: [
-                                            //   for (var (index, item) in test)
-                                            //     TodoTile(item, category, index)
-                                            //   // todo: make index to uuid
-                                            // ],
-                                            ),
-                                  )
+                                        : ListView.builder(
+                                            itemCount: filteredTodos.length,
+                                            itemBuilder: (context, index) {
+                                              var todo = filteredTodos[index];
+                                              return TodoTile(
+                                                  todo.uuid,
+                                                  TodoItem(
+                                                      title: todo.content,
+                                                      star: todo.favorite,
+                                                      done: todo.done),
+                                                  parseCategory(todo.category),
+                                                  index);
+                                            },
+                                          ))
                                 : const SizedBox()
                             : Text(
                                 category.value.description,
@@ -175,15 +182,18 @@ class TodoCategory extends StatelessWidget {
 
 class TodoTile extends StatelessWidget {
   TodoTile(
+    this.uuid,
     this.item,
     this.category,
     this.index, {
     super.key,
   });
+  final String uuid;
   final TodoItem item;
   final int index;
   final Category category;
   final TodoController controller = Get.find<TodoController>();
+  final ApiController apiController = Get.put(ApiController());
 
   @override
   Widget build(BuildContext context) {
@@ -192,10 +202,12 @@ class TodoTile extends StatelessWidget {
         item.title + index.toString(),
       ),
       onDismissed: (direction) {
-        controller.deleteTodo(
-          category,
-          index,
-        );
+        apiController.fetchApiData({}, "delete",
+            queryParameters: {"uuid": uuid});
+        // controller.deleteTodo(
+        //   category,
+        //   index,
+        // );
       },
       child: Card(
         elevation: 1.2,
