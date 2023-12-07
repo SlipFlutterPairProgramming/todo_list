@@ -48,7 +48,7 @@ class _AddScreenState extends State<AddScreen> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.symmetric(
+          padding: const EdgeInsets.symmetric(
             horizontal: 20,
             vertical: 30,
           ),
@@ -113,13 +113,15 @@ class _AddScreenState extends State<AddScreen> {
                       onPressed: () {
                         // controller.addTodoItem(
                         //     _selectedCategory, textController.text);
+
                         addController.fetchApiData({
-                          "uuid": Uuid().v4(),
-                          "category": "To Do",
+                          "uuid": const Uuid().v4(),
+                          "category": _selectedCategory.toString(),
                           "content": textController.text,
                           "favorite": false,
                           "done": false
                         }, "put");
+                        print(addController.apiData.value);
                         Navigator.pop(context);
                       },
                       style: ButtonStyle(

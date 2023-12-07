@@ -6,12 +6,9 @@ import 'package:todo_bentley/pages/add_page.dart';
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
   final TodoController controller = Get.find();
-  final apiController = Get.put(ApiController());
 
   @override
   Widget build(BuildContext context) {
-    final data = apiController.fetchApiData({}, "get");
-    print("test" + apiController.apiData.value);
     return const Scaffold(
       backgroundColor: Color(0xffFF8181),
       body: Column(
@@ -60,94 +57,119 @@ class TodoCategory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TodoController controller = Get.find();
+    // final TodoController controller = Get.find();
+    final ApiController apiController = Get.put(ApiController());
+    // final data = apiController.fetchApiData({}, "get");
+    // Test test = Test.fromJson(data);
+    // print("test${apiController.apiData.value}");
 
-    return Obx(() {
-      bool isSelected = Get.find<TodoController>().selectedCategory.value ==
-          category.value.title;
+    return FutureBuilder<dynamic>(
+      future: apiController.fetchApiData({}, "get"),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // 데이터를 기다리는 동안 로딩 인디케이터를 보여줍니다.
+          return const CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          // 에러가 발생했을 때의 처리
+          return Text('Error: ${snapshot.error}');
+        } else {
+          // 데이터가 정상적으로 로드되었을 때
+          final data = snapshot.data;
+          Test test = Test.fromJson(data);
+          print(test);
+          // 이제 'test' 객체를 사용하여 UI를 구성할 수 있습니다.
 
-      bool isClicked = Get.find<TodoController>().selectedCategory.value != '';
+          return Obx(() {
+            bool isSelected =
+                Get.find<TodoController>().selectedCategory.value ==
+                    category.value.title;
 
-      var todoItems = controller.todoList[category];
-      return Flexible(
-        flex: isSelected ? 3 : 1,
-        child: GestureDetector(
-          onTap: () => controller.changeCategory(category.value.title),
-          child: Container(
-            decoration: BoxDecoration(color: category.value.bgColor),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        category.value.title,
-                        style: TextStyle(
-                          color: category.value.fontColor,
-                          fontSize: 32,
-                          fontFamily: 'Jalnan',
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () => {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const AddScreen(),
-                              fullscreenDialog: true,
+            bool isClicked =
+                Get.find<TodoController>().selectedCategory.value != '';
+
+            var todoItems = apiController.apiData.value;
+            return Flexible(
+              flex: isSelected ? 3 : 1,
+              child: GestureDetector(
+                // onTap: () => controller.changeCategory(category.value.title),
+                child: Container(
+                  decoration: BoxDecoration(color: category.value.bgColor),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 30),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              category.value.title,
+                              style: TextStyle(
+                                color: category.value.fontColor,
+                                fontSize: 32,
+                                fontFamily: 'Jalnan',
+                              ),
                             ),
-                          )
-                        },
-                        child: Icon(
-                          category == Catepgory.toDo
-                              ? Icons.add_outlined
-                              : null,
-                          color: category.value.fontColor,
-                          size: 32,
-                        ),
-                      )
-                    ],
-                  ),
-                  isClicked
-                      ? isSelected
-                          ? Expanded(
-                              child: todoItems == null || todoItems.isEmpty
-                                  ? Center(
-                                      child: Text(
-                                        "Please create a Todo item.",
-                                        style: TextStyle(
-                                          color: category.value.fontColor,
-                                          fontSize: 24,
-                                        ),
-                                      ),
-                                    )
-                                  : ListView(
-                                      children: [
-                                        for (var (index, item)
-                                            in todoItems.indexed)
-                                          TodoTile(item, category, index)
-                                        //todo: make index to uuid
-                                      ],
-                                    ),
+                            GestureDetector(
+                              onTap: () => {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const AddScreen(),
+                                    fullscreenDialog: true,
+                                  ),
+                                )
+                              },
+                              child: Icon(
+                                category == Category.toDo
+                                    ? Icons.add_outlined
+                                    : null,
+                                color: category.value.fontColor,
+                                size: 32,
+                              ),
                             )
-                          : const SizedBox()
-                      : Text(
-                          category.value.description,
-                          style: TextStyle(
-                            color: category.value.fontColor,
-                            fontSize: 18,
-                          ),
+                          ],
                         ),
-                ],
+                        isClicked
+                            ? isSelected
+                                ? Expanded(
+                                    child: todoItems.isEmpty
+                                        ? Center(
+                                            child: Text(
+                                              "Please create a Todo item.",
+                                              style: TextStyle(
+                                                color: category.value.fontColor,
+                                                fontSize: 24,
+                                              ),
+                                            ),
+                                          )
+                                        : ListView(
+                                            // children: [
+                                            //   for (var (index, item) in test)
+                                            //     TodoTile(item, category, index)
+                                            //   // todo: make index to uuid
+                                            // ],
+                                            ),
+                                  )
+                                : const SizedBox()
+                            : Text(
+                                category.value.description,
+                                style: TextStyle(
+                                  color: category.value.fontColor,
+                                  fontSize: 18,
+                                ),
+                              ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
-            ),
-          ),
-        ),
-      );
-    });
+            );
+          });
+        }
+      },
+    );
   }
 }
 

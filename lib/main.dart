@@ -119,7 +119,7 @@ class ApiController extends GetxController {
   var apiData = ''.obs;
   final todoController = Get.put(TodoController);
 
-  late var devId;
+  var devId;
 
   @override
   void onInit() {
@@ -145,6 +145,42 @@ class ApiController extends GetxController {
       print('Failed to load data');
     }
   }
+}
+
+class Test {
+  String devId;
+  List<Todo> todos;
+
+  Test({required this.devId, required this.todos});
+
+  factory Test.fromJson(Map<String, dynamic> json) => Test(
+        devId: json['dev_id'],
+        todos: List<Todo>.from(json['todos'].map((x) => Todo.fromJson(x))),
+      );
+}
+
+class Todo {
+  String uuid;
+  String category;
+  String content;
+  bool favorite;
+  bool done;
+
+  Todo({
+    required this.uuid,
+    required this.category,
+    required this.content,
+    required this.favorite,
+    required this.done,
+  });
+
+  factory Todo.fromJson(Map<String, dynamic> json) => Todo(
+        uuid: json['uuid'],
+        category: json['category'],
+        content: json['content'],
+        favorite: json['favorite'],
+        done: json['done'],
+      );
 }
 
 class MyApp extends StatelessWidget {
