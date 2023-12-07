@@ -8,11 +8,6 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tp = TodoProvider();
-    tp.getTodos("kh").then((value) {
-      print(value.body);
-      print("Hello");
-    });
     return const Scaffold(
       backgroundColor: Color(0xffFF8181),
       body: Column(

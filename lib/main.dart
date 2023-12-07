@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:todo_bentley/pages/home_page.dart';
 
 void main() {
-  Get.put(TodoController());
+  Get.put(TodoController("kh"));
   runApp(const MyApp());
 }
 
@@ -64,6 +64,29 @@ class TodoProvider extends GetConnect {
 }
 
 class TodoController extends GetxController {
+  TodoController(String devId) {
+    todoProvider.getTodos(devId).then((value) {
+      var todos = value.body["todos"];
+      var todo = {
+        Category.toDo: <TodoItem>[
+        ],
+        Category.toSchedule: <TodoItem>[
+        ],
+        Category.toDelegate: <TodoItem>[
+        ],
+        Category.toDelete: <TodoItem>[],
+      };
+      for(var i = 0; i < todos.length; i++) {
+        String category = todos[i]["category"];
+        todo[Category.values.byName(category)]?.add(
+          TodoItem(title: todos[i]["content"], done: todos[i]["done"], star: todos[i]["favorite"])
+        );
+      }
+    });
+  }
+
+  TodoProvider todoProvider = TodoProvider();
+
   var selectedCategory = ''.obs;
 
   var todoList = {
@@ -116,6 +139,8 @@ class TodoController extends GetxController {
     todoList[category]?.removeAt(index);
     todoList[category]?.refresh();
   }
+
+
 }
 
 class MyApp extends StatelessWidget {
