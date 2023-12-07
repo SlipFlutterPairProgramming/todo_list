@@ -16,10 +16,8 @@ class _AddScreenState extends State<AddScreen> {
   Color _selectedBgColor = const Color(0xffC8C8C8);
   Color _selectedFontColor = const Color(0xff000000);
 
-  // final TodoController controller = Get.find();
   final ApiController addController = Get.find();
 
-  // TextEditingController 인스턴스를 생성합니다.
   final textController = TextEditingController();
 
   @override
@@ -111,9 +109,6 @@ class _AddScreenState extends State<AddScreen> {
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () {
-                        // controller.addTodoItem(
-                        //     _selectedCategory, textController.text);
-
                         addController.fetchApiData({
                           "uuid": const Uuid().v4(),
                           "category": _selectedCategory.toString(),
@@ -121,7 +116,6 @@ class _AddScreenState extends State<AddScreen> {
                           "favorite": false,
                           "done": false
                         }, "put");
-                        print(addController.apiData.value);
                         Navigator.pop(context);
                       },
                       style: ButtonStyle(

@@ -61,122 +61,99 @@ class TodoCategory extends StatelessWidget {
   Widget build(BuildContext context) {
     final TodoController controller = Get.find();
     final ApiController apiController = Get.put(ApiController());
-    // final data = apiController.fetchApiData({}, "get");
-    // Test test = Test.fromJson(data);
-    // print("test${apiController.apiData.value}");
 
-    return FutureBuilder<dynamic>(
-      future: apiController.fetchApiData({}, "get"),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          // 데이터를 기다리는 동안 로딩 인디케이터를 보여줍니다.
-          return const CircularProgressIndicator();
-        } else if (snapshot.hasError) {
-          // 에러가 발생했을 때의 처리
-          return Text('Error: ${snapshot.error}');
-        } else {
-          Map<String, dynamic> jsonMap =
-              jsonDecode(apiController.apiData.value);
-          Test test = Test.fromJson(jsonMap);
+    return Obx(() {
+      Map<String, dynamic> jsonMap = jsonDecode(apiController.apiData.value);
+      Test test = Test.fromJson(jsonMap);
+      List<Todo> filteredTodos = test.filterTodosByCategory(category);
 
-          List<Todo> filteredTodos = test.filterTodosByCategory(category);
-          print(filteredTodos);
-          return Obx(() {
-            bool isSelected =
-                Get.find<TodoController>().selectedCategory.value ==
-                    category.value.title;
+      bool isSelected = Get.find<TodoController>().selectedCategory.value ==
+          category.value.title;
 
-            bool isClicked =
-                Get.find<TodoController>().selectedCategory.value != '';
+      bool isClicked = Get.find<TodoController>().selectedCategory.value != '';
 
-            return Flexible(
-              flex: isSelected ? 3 : 1,
-              child: GestureDetector(
-                onTap: () => controller.changeCategory(category.value.title),
-                child: Container(
-                  decoration: BoxDecoration(color: category.value.bgColor),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 30),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              category.value.title,
-                              style: TextStyle(
-                                color: category.value.fontColor,
-                                fontSize: 32,
-                                fontFamily: 'Jalnan',
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () => {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const AddScreen(),
-                                    fullscreenDialog: true,
-                                  ),
-                                )
-                              },
-                              child: Icon(
-                                category == Category.toDo
-                                    ? Icons.add_outlined
-                                    : null,
-                                color: category.value.fontColor,
-                                size: 32,
-                              ),
-                            )
-                          ],
+      return Flexible(
+        flex: isSelected ? 3 : 1,
+        child: GestureDetector(
+          onTap: () => controller.changeCategory(category.value.title),
+          child: Container(
+            decoration: BoxDecoration(color: category.value.bgColor),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        category.value.title,
+                        style: TextStyle(
+                          color: category.value.fontColor,
+                          fontSize: 32,
+                          fontFamily: 'Jalnan',
                         ),
-                        isClicked
-                            ? isSelected
-                                ? Expanded(
-                                    child: test.todos.isEmpty
-                                        ? Center(
-                                            child: Text(
-                                              "Please create a Todo item.",
-                                              style: TextStyle(
-                                                color: category.value.fontColor,
-                                                fontSize: 24,
-                                              ),
-                                            ),
-                                          )
-                                        : ListView.builder(
-                                            itemCount: filteredTodos.length,
-                                            itemBuilder: (context, index) {
-                                              var todo = filteredTodos[index];
-                                              return TodoTile(
-                                                  todo.uuid,
-                                                  TodoItem(
-                                                      title: todo.content,
-                                                      star: todo.favorite,
-                                                      done: todo.done),
-                                                  parseCategory(todo.category),
-                                                  index);
-                                            },
-                                          ))
-                                : const SizedBox()
-                            : Text(
-                                category.value.description,
-                                style: TextStyle(
-                                  color: category.value.fontColor,
-                                  fontSize: 18,
-                                ),
-                              ),
-                      ],
-                    ),
+                      ),
+                      GestureDetector(
+                        onTap: () => {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const AddScreen(),
+                              fullscreenDialog: true,
+                            ),
+                          )
+                        },
+                        child: Icon(
+                          category == Category.toDo ? Icons.add_outlined : null,
+                          color: category.value.fontColor,
+                          size: 32,
+                        ),
+                      )
+                    ],
                   ),
-                ),
+                  isClicked
+                      ? isSelected
+                          ? Expanded(
+                              child: test.todos.isEmpty
+                                  ? Center(
+                                      child: Text(
+                                        "Please create a Todo item.",
+                                        style: TextStyle(
+                                          color: category.value.fontColor,
+                                          fontSize: 24,
+                                        ),
+                                      ),
+                                    )
+                                  : ListView.builder(
+                                      itemCount: filteredTodos.length,
+                                      itemBuilder: (context, index) {
+                                        var todo = filteredTodos[index];
+                                        return TodoTile(
+                                            todo.uuid,
+                                            TodoItem(
+                                                title: todo.content,
+                                                star: todo.favorite,
+                                                done: todo.done),
+                                            parseCategory(todo.category),
+                                            index);
+                                      },
+                                    ))
+                          : const SizedBox()
+                      : Text(
+                          category.value.description,
+                          style: TextStyle(
+                            color: category.value.fontColor,
+                            fontSize: 18,
+                          ),
+                        ),
+                ],
               ),
-            );
-          });
-        }
-      },
-    );
+            ),
+          ),
+        ),
+      );
+    });
   }
 }
 
