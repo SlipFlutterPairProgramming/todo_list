@@ -1,6 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:todo_bentley/pages/home_page.dart';
+import 'package:uuid/uuid.dart';
+
+import 'package:http/http.dart' as http;
 
 void main() {
   Get.put(TodoController());
@@ -110,12 +115,109 @@ class TodoController extends GetxController {
   }
 }
 
+class ApiController extends GetxController {
+  var apiData = ''.obs;
+  final todoController = Get.put(TodoController);
+
+  var devId;
+
+  @override
+  void onInit() {
+    super.onInit();
+    devId = const Uuid().v4();
+  }
+
+  String url = "ec2-3-22-101-127.us-east-2.compute.amazonaws.com:8000";
+
+  Future<void> fetchApiData(Map<String, dynamic> data, String method,
+      {Map<String, dynamic>? queryParameters}) async {
+    var uri = Uri.http(
+      url,
+      '/$devId/$method',
+      queryParameters,
+    );
+    final response = await http.post(
+      uri,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode == 200) {
+      apiData.value = response.body;
+    } else {
+      // 오류 처리
+      print('Failed to load data');
+    }
+  }
+}
+
+class Test {
+  String devId;
+  List<Todo> todos;
+
+  Test({required this.devId, required this.todos});
+
+  factory Test.fromJson(Map<String, dynamic> json) => Test(
+        devId: json['dev_id'],
+        todos: List<Todo>.from(json['todos'].map((x) => Todo.fromJson(x))),
+      );
+
+  // 주어진 Category와 일치하는 Todo 요소들만 필터링하여 반환하는 메소드
+  List<Todo> filterTodosByCategory(Category category) {
+    return todos
+        .where((todo) => parseCategory(todo.category) == category)
+        .toList();
+  }
+}
+
+class Todo {
+  String uuid;
+  String category;
+  String content;
+  bool favorite;
+  bool done;
+
+  Todo({
+    required this.uuid,
+    required this.category,
+    required this.content,
+    required this.favorite,
+    required this.done,
+  });
+
+  factory Todo.fromJson(Map<String, dynamic> json) => Todo(
+        uuid: json['uuid'],
+        category: json['category'],
+        content: json['content'],
+        favorite: json['favorite'],
+        done: json['done'],
+      );
+}
+
+Category parseCategory(String categoryStr) {
+  // 'Category.toDo' 같은 문자열에서 마지막 부분만 추출
+  String enumValue = categoryStr.split('.').last;
+
+  // 모든 Category 열거형 값을 순회하며 일치하는 값을 찾습니다.
+  for (Category value in Category.values) {
+    if (value.toString().split('.').last == enumValue) {
+      return value;
+    }
+  }
+
+  // 일치하는 열거형 값이 없는 경우 예외를 발생시킵니다.
+  // 혹은 기본값을 반환할 수도 있습니다.
+  throw ArgumentError('Unknown category string: $categoryStr');
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       home: HomeScreen(),
     );
   }

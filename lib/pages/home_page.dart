@@ -1,10 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:todo_bentley/main.dart';
 import 'package:todo_bentley/pages/add_page.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  HomeScreen({super.key});
+  final TodoController controller = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -57,14 +60,18 @@ class TodoCategory extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TodoController controller = Get.find();
+    final ApiController apiController = Get.put(ApiController());
 
     return Obx(() {
+      Map<String, dynamic> jsonMap = jsonDecode(apiController.apiData.value);
+      Test test = Test.fromJson(jsonMap);
+      List<Todo> filteredTodos = test.filterTodosByCategory(category);
+
       bool isSelected = Get.find<TodoController>().selectedCategory.value ==
           category.value.title;
 
       bool isClicked = Get.find<TodoController>().selectedCategory.value != '';
 
-      var todoItems = controller.todoList[category];
       return Flexible(
         flex: isSelected ? 3 : 1,
         child: GestureDetector(
@@ -108,7 +115,7 @@ class TodoCategory extends StatelessWidget {
                   isClicked
                       ? isSelected
                           ? Expanded(
-                              child: todoItems == null || todoItems.isEmpty
+                              child: test.todos.isEmpty
                                   ? Center(
                                       child: Text(
                                         "Please create a Todo item.",
@@ -118,15 +125,20 @@ class TodoCategory extends StatelessWidget {
                                         ),
                                       ),
                                     )
-                                  : ListView(
-                                      children: [
-                                        for (var (index, item)
-                                            in todoItems.indexed)
-                                          TodoTile(item, category, index)
-                                        //todo: make index to uuid
-                                      ],
-                                    ),
-                            )
+                                  : ListView.builder(
+                                      itemCount: filteredTodos.length,
+                                      itemBuilder: (context, index) {
+                                        var todo = filteredTodos[index];
+                                        return TodoTile(
+                                            todo.uuid,
+                                            TodoItem(
+                                                title: todo.content,
+                                                star: todo.favorite,
+                                                done: todo.done),
+                                            parseCategory(todo.category),
+                                            index);
+                                      },
+                                    ))
                           : const SizedBox()
                       : Text(
                           category.value.description,
@@ -147,15 +159,18 @@ class TodoCategory extends StatelessWidget {
 
 class TodoTile extends StatelessWidget {
   TodoTile(
+    this.uuid,
     this.item,
     this.category,
     this.index, {
     super.key,
   });
+  final String uuid;
   final TodoItem item;
   final int index;
   final Category category;
   final TodoController controller = Get.find<TodoController>();
+  final ApiController apiController = Get.put(ApiController());
 
   @override
   Widget build(BuildContext context) {
@@ -164,10 +179,12 @@ class TodoTile extends StatelessWidget {
         item.title + index.toString(),
       ),
       onDismissed: (direction) {
-        controller.deleteTodo(
-          category,
-          index,
-        );
+        apiController.fetchApiData({}, "delete",
+            queryParameters: {"uuid": uuid});
+        // controller.deleteTodo(
+        //   category,
+        //   index,
+        // );
       },
       child: Card(
         elevation: 1.2,
