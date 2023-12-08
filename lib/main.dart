@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:todo_bentley/pages/home_page.dart';
 
 void main() {
-  Get.put(TodoController());
+  Get.put(TodoController("kh"));
   runApp(const MyApp());
 }
 
@@ -55,24 +55,60 @@ class TodoItem {
   TodoItem({required this.title, this.star = false, this.done = false});
 }
 
+class TodoProvider extends GetConnect {
+  Future<Response> getTodos(String devId) {
+    return post(
+        "http://ec2-3-22-101-127.us-east-2.compute.amazonaws.com:8000/$devId/get",
+        {});
+  }
+
+  Future<Response> putTodos(
+      String devId, TodoItem todoItem, Category category) {
+    return post(
+        "http://ec2-3-22-101-127.us-east-2.compute.amazonaws.com:8000/$devId/put",
+        {
+          "uuid": todoItem.title,
+          "content": todoItem.title,
+          "category": category.name,
+          "favorite": todoItem.star,
+          "done": todoItem.done,
+        });
+  }
+
+  Future<Response> deleteTodos(String devId, TodoItem todoItem) {
+    String uuid = todoItem.title;
+    return post(
+        "http://ec2-3-22-101-127.us-east-2.compute.amazonaws.com:8000/$devId/delete?uuid=$uuid",
+        {});
+  }
+}
+
 class TodoController extends GetxController {
+  TodoController(String devId) {
+    todoProvider.getTodos(devId).then((value) {
+      var resTodo = value.body["todos"];
+      var todo = {for (var item in todoList.keys) item: todoList[item]!.value};
+      for (var item in resTodo) {
+        String category = item["category"];
+        todo[Category.values.byName(category)]!.add(TodoItem(
+            title: item["content"],
+            done: item["done"],
+            star: item["favorite"]));
+      }
+      for (var category in todo.keys) {
+        todoList[category]!.value = todo[category]!;
+      }
+    });
+  }
+
+  TodoProvider todoProvider = TodoProvider();
+
   var selectedCategory = ''.obs;
 
   var todoList = {
-    Category.toDo: <TodoItem>[
-      TodoItem(title: 'Buy groceries', done: true),
-      TodoItem(title: 'Walk the dog', star: true),
-      TodoItem(title: 'Old newsletters'),
-      TodoItem(title: 'Unused files'),
-    ].obs,
-    Category.toSchedule: <TodoItem>[
-      TodoItem(title: 'Doctor appointment'),
-      TodoItem(title: 'Team meeting'),
-      TodoItem(title: 'Write monthly report'),
-    ].obs,
-    Category.toDelegate: <TodoItem>[
-      TodoItem(title: 'Update website'),
-    ].obs,
+    Category.toDo: <TodoItem>[].obs,
+    Category.toSchedule: <TodoItem>[].obs,
+    Category.toDelegate: <TodoItem>[].obs,
     Category.toDelete: <TodoItem>[].obs,
   }; // 각 카테고리의 할 일 목록도 관찰 가능한 리스트로 정의합니다.
 
@@ -81,8 +117,10 @@ class TodoController extends GetxController {
   }
 
   // 새로운 할 일 항목을 특정 카테고리에 추가합니다.
-  void addTodoItem(Category category, String todoItem) {
-    todoList[category]?.add(TodoItem(title: todoItem));
+  void addTodoItem(Category category, String content) async {
+    final todoItem = TodoItem(title: content);
+    todoList[category]?.add(todoItem);
+    await todoProvider.putTodos("kh", todoItem, category);
   }
 
   // 할 일 항목의 완료 상태를 토글합니다.
@@ -104,9 +142,12 @@ class TodoController extends GetxController {
   }
 
   // 할 일 항목을 삭제합니다.
-  void deleteTodo(Category category, int index) {
+  void deleteTodo(Category category, int index) async {
+    await todoProvider.deleteTodos("kh", todoList[category]![index]);
+
     todoList[category]?.removeAt(index);
     todoList[category]?.refresh();
+
   }
 }
 
